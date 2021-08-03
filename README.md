@@ -18,7 +18,9 @@ Desdemona is an Othello sandbox, providing both a game you can play, as well as 
 
 ## Running
 
-`cargo run` will start a game for you to play.
+`cargo run --release` will start a game for you to play.
+
+The `--release` flag is particularly important if you run compute intensive strategies like the Monte Carlo solver.
 
 ## Binaries 
 
@@ -32,7 +34,7 @@ To run the other programs, use `cargo run --bin NAME`.
 
 ## Benchmarks
 
-Currently plays a full random game in ~600µs. This isn't important for casual play, but it's handy for analysis!
+Currently plays a full random game in ~600µs, and can be parallelized to ~100µs (see `bin/stress` above). This isn't important for casual play, but it's handy for analysis!
 
 ## Copyright, etc.
 

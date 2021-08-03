@@ -1,6 +1,7 @@
 use desdemona::solvers::{Random, Solver};
 use desdemona::{Disc, Game};
 use rand::prelude::*;
+use rayon::prelude::*;
 use std::io::{self, Write};
 use std::time::Instant;
 
@@ -10,6 +11,7 @@ const REPLAY_LOOPS: usize = 10_000;
 fn main() -> Result<(), io::Error> {
     replay_loops()?;
     random_bench()?;
+    parallel_bench()?;
     Ok(())
 }
 
@@ -69,11 +71,36 @@ fn divergence_grinder() -> Option<(Game, Game)> {
 }
 
 fn random_bench() -> Result<(), io::Error> {
-    print!("Benchmarking {} random games ... ", REPLAY_LOOPS);
+    print!(
+        "Benchmarking {} random games (single thread) ... ",
+        REPLAY_LOOPS
+    );
     io::stdout().flush()?;
     let started = Instant::now();
     Random::new().bench(REPLAY_LOOPS);
     let elapsed = started.elapsed();
     println!("{:?} per game. ✅", elapsed / (REPLAY_LOOPS as u32));
+    Ok(())
+}
+
+fn parallel_bench() -> Result<(), io::Error> {
+    let multiplier = 10;
+    let replay_loops = REPLAY_LOOPS * multiplier;
+    print!(
+        "Benchmarking {} random games (multithreaded) ... ",
+        replay_loops
+    );
+    io::stdout().flush()?;
+
+    let started = Instant::now();
+    let _ = (0..multiplier)
+        .into_iter()
+        .collect::<Vec<usize>>()
+        .par_iter()
+        .map(|_| Random::new().bench(REPLAY_LOOPS))
+        .count();
+    let elapsed = started.elapsed();
+
+    println!("{:?} per game. ✅", elapsed / (replay_loops as u32));
     Ok(())
 }
