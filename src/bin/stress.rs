@@ -84,23 +84,23 @@ fn random_bench() -> Result<(), io::Error> {
 }
 
 fn parallel_bench() -> Result<(), io::Error> {
-    let multiplier = 10;
-    let replay_loops = REPLAY_LOOPS * multiplier;
+    let divisor = 10;
+    let replay_loops = REPLAY_LOOPS / divisor;
     print!(
         "Benchmarking {} random games (multithreaded) ... ",
-        replay_loops
+        REPLAY_LOOPS
     );
     io::stdout().flush()?;
 
     let started = Instant::now();
-    let _ = (0..multiplier)
+    let _ = (0..divisor)
         .into_iter()
         .collect::<Vec<usize>>()
         .par_iter()
-        .map(|_| Random::new().bench(REPLAY_LOOPS))
+        .map(|_| Random::new().bench(replay_loops))
         .count();
     let elapsed = started.elapsed();
 
-    println!("{:?} per game. ✅", elapsed / (replay_loops as u32));
+    println!("{:?} per game. ✅", elapsed / (REPLAY_LOOPS as u32));
     Ok(())
 }
