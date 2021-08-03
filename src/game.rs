@@ -12,7 +12,7 @@ impl Display for Play {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self {
             Play::Move(p) => write!(f, "{}", p),
-            Play::Pass => write!(f, "x"),
+            Play::Pass => write!(f, "p"),
         }
     }
 }
@@ -267,8 +267,8 @@ impl Display for Game {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ValidMove {
-    position: Position,
-    flips: Vec<Position>,
+    pub position: Position,
+    pub flips: Vec<Position>,
 }
 
 impl ValidMove {

@@ -25,6 +25,7 @@ fn main() {
             "minimize" => Box::new(Minimize {}),
             "maximize" => Box::new(Maximize {}),
             "simple" => Box::new(Simple {}),
+            "monte" => Box::new(Monte::new()),
             e => {
                 println!(
                     "Unknown strategy {} -- try random, minimize, maximize, or simple.",
@@ -35,7 +36,7 @@ fn main() {
         },
     };
 
-    println!("Othello!\n\nComputer Strategy: {}\n\nYou are the dark discs.\nPlace a disc with a coordinate (eg: \"a2\"), or pass with \"p\".\nTo get a transcript of the game, type \"t\".\nTo quit, \"q\".\nHave fun!\n", solver.name());
+    println!("Desdemona!\n\nComputer Strategy: {}\n\nYou are the dark discs.\nPlace a disc with a coordinate (eg: \"a2\"), or pass with \"p\".\nTo get a transcript of the game, type \"t\".\nTo quit, \"q\".\nHave fun!\n", solver.name());
 
     while !game.is_complete {
         println!("{}", game);
@@ -82,11 +83,14 @@ fn main() {
                 }
             }
         } else {
+            print!("Desdemona...");
+            std::io::stdout().flush().unwrap();
             // opponent (light) plays a random valid move.
             match solver.next_play(&game) {
                 Some(vm) => game.play_valid_move(vm),
                 None => game.pass(),
             }
+            println!();
         }
     }
     print_transcript(&game.transcript);

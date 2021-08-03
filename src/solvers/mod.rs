@@ -1,11 +1,13 @@
 mod maximize;
 mod minimize;
+mod monte;
 mod random;
 mod simple;
 
 use crate::{Game, ValidMove};
 pub use maximize::Maximize;
 pub use minimize::Minimize;
+pub use monte::Monte;
 pub use random::Random;
 pub use simple::Simple;
 
