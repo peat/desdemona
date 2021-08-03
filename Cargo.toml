@@ -1,0 +1,17 @@
+[package]
+name = "desdemona"
+version = "0.1.0"
+edition = "2018"
+authors = ["Peat Bakke <peat@peat.org>"]
+default-run = "desdemona"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+# handy for `cargo flamegraph`
+[profile.release]
+debug = true
+
+[dependencies]
+rand = "0" # for bin/stress and solver/random
+text_io = "0" # for bin/desdemona
+clap = "2" # for bin/desdemona
