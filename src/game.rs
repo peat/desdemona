@@ -17,15 +17,12 @@ impl Display for Play {
     }
 }
 
-pub struct Score {
-    pub dark: usize,
-    pub light: usize,
-    pub empty: usize,
-}
-
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Game {
     pub turn: Disc,
+    pub dark: usize,
+    pub light: usize,
+    pub empty: usize,
     pub board: Board,
     pub transcript: Vec<Play>,
     pub is_complete: bool,
@@ -40,6 +37,9 @@ impl Game {
 
         Self {
             turn,
+            dark: 2,
+            light: 2,
+            empty: 60,
             board,
             transcript,
             is_complete,
@@ -95,6 +95,17 @@ impl Game {
     }
 
     pub fn play_valid_move(&mut self, valid_move: ValidMove) {
+        // do the score accounting before we consume all of the moves
+        let flipped = valid_move.flips.len();
+        self.empty -= 1; // decrement the empty spaces
+        if self.turn == Disc::Dark {
+            self.dark += flipped + 1;
+            self.light -= flipped;
+        } else {
+            self.light += flipped + 1;
+            self.dark -= flipped;
+        }
+
         // add the disc to the played position
         self.board.set(valid_move.position.into(), self.turn);
 
@@ -117,14 +128,6 @@ impl Game {
             // otherwise, mark the pass and move on to the other player!
             self.transcript.push(Play::Pass);
             self.turn = self.turn.opposite();
-        }
-    }
-
-    pub fn score(&self) -> Score {
-        Score {
-            dark: self.board.indexes_of(Some(Disc::Dark)).count(),
-            light: self.board.indexes_of(Some(Disc::Light)).count(),
-            empty: self.board.indexes_of(None).count(),
         }
     }
 
@@ -256,11 +259,10 @@ impl Game {
 
 impl Display for Game {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        let score = self.score();
         writeln!(
             f,
             "{}\nTurn: {} Dark: {} Light: {} Empty: {}",
-            self.board, self.turn, score.dark, score.light, score.empty,
+            self.board, self.turn, self.dark, self.light, self.empty,
         )
     }
 }
@@ -391,5 +393,27 @@ mod tests {
         let game_from_transcript = Game::from_transcript(&game.transcript).unwrap();
 
         assert_eq!(game_from_transcript, game);
+    }
+
+    #[test]
+    fn test_scoring() {
+        for _ in 0..100 {
+            let mut game = Game::new();
+
+            while !game.is_complete {
+                match game.valid_moves(game.turn).pop() {
+                    None => game.pass(),
+                    Some(vm) => game.play_valid_move(vm),
+                }
+            }
+
+            let dark = game.board.indexes_of(Some(Disc::Dark)).count();
+            let light = game.board.indexes_of(Some(Disc::Light)).count();
+            let empty = game.board.indexes_of(None).count();
+
+            assert_eq!(game.dark, dark);
+            assert_eq!(game.light, light);
+            assert_eq!(game.empty, empty);
+        }
     }
 }

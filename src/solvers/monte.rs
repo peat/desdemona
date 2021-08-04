@@ -47,9 +47,8 @@ impl Monte {
             random.solve(&mut new_game);
 
             // tally whether this is a win for the current player (the original game.turn)
-            let score = new_game.score();
-            if ((score.light > score.dark) && game.turn == Disc::Light)
-                || ((score.dark > score.light) && game.turn == Disc::Dark)
+            if ((game.light > game.dark) && game.turn == Disc::Light)
+                || ((game.dark > game.light) && game.turn == Disc::Dark)
             {
                 wins += 1;
             }
