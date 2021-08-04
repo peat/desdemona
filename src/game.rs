@@ -169,7 +169,7 @@ impl Game {
     }
 
     fn move_from_empty(&self, player: Disc, indexes: &[usize]) -> Option<ValidMove> {
-        let mut targets = Vec::with_capacity(6);
+        let mut targets = Vec::with_capacity(indexes.len());
         for idx in indexes {
             // ignore the first position; it's not a target, it's where we'll be placing the piece!
             if idx == indexes.first()? {
@@ -198,7 +198,7 @@ impl Game {
     }
 
     fn move_from_occupied(&self, player: Disc, indexes: &[usize]) -> Option<ValidMove> {
-        let mut targets = Vec::with_capacity(6);
+        let mut targets = Vec::with_capacity(indexes.len());
 
         for idx in indexes {
             // ignore the first position; it's occupied by the originating position!
@@ -206,16 +206,17 @@ impl Game {
                 continue;
             }
 
-            let disc = self.board.get(*idx);
+            if let Some(disc) = self.board.get(*idx) {
+                if disc == player.opposite() {
+                    // if the disc is the opposition color, put the position in targets and move on
+                    targets.push(Position::new(*idx));
+                    continue;
+                }
 
-            // exit if we encounter our own color disc; no playable moves on this line.
-            if disc == Some(player) {
-                return None;
-            }
-
-            // if the position is empty ...
-            if disc.is_none() {
-                // if we have no targets, there's no line, return none.
+                if disc == player {
+                    return None;
+                }
+            } else {
                 if targets.is_empty() {
                     return None;
                 }
@@ -223,9 +224,6 @@ impl Game {
                 // we have targets! this is a legitimate line; return a valid move!
                 return Some(ValidMove::new(Position::new(*idx), targets));
             }
-
-            // if the disc is the opposition color, put the position in targets and move on
-            targets.push(Position::new(*idx));
         }
 
         None
