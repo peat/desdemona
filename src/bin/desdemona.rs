@@ -28,7 +28,7 @@ fn main() {
             "monte" => Box::new(Monte::new()),
             e => {
                 println!(
-                    "Unknown strategy {} -- try random, minimize, maximize, or simple.",
+                    "Unknown strategy {} -- try random, minimize, maximize, monte, or simple.",
                     e
                 );
                 return;
