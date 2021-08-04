@@ -93,7 +93,7 @@ impl Game {
                 }
             }
         } else {
-            // smaller number of empty discs; search occupied pieces
+            // smaller number of empty positions; search empty positions
             for p in self.board.positions_of(None) {
                 for om in self.moves_for_empty(player, p) {
                     if let Some(m) = om {
@@ -109,15 +109,7 @@ impl Game {
 
     pub fn play_valid_move(&mut self, valid_move: ValidMove) {
         // do the score accounting before we consume all of the moves
-        let flipped = valid_move.flips.len();
-        self.empty -= 1; // decrement the empty spaces
-        if self.turn == Disc::Dark {
-            self.dark += flipped + 1;
-            self.light -= flipped;
-        } else {
-            self.light += flipped + 1;
-            self.dark -= flipped;
-        }
+        self.update_scores(&valid_move);
 
         // add the disc to the played position
         self.board.set(valid_move.position.into(), self.turn);
@@ -267,6 +259,19 @@ impl Game {
         }
 
         output
+    }
+
+    fn update_scores(&mut self, valid_move: &ValidMove) {
+        let flipped = valid_move.flips.len();
+        let total = flipped + 1; // +1 for the played disc
+        self.empty -= 1; // decrement the empty spaces
+        if self.turn == Disc::Dark {
+            self.dark += total;
+            self.light -= flipped;
+        } else {
+            self.light += total;
+            self.dark -= flipped;
+        }
     }
 }
 
