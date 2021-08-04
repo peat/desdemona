@@ -2,8 +2,11 @@
 name = "desdemona"
 version = "0.1.0"
 edition = "2018"
+description = "Terminal Othello and analysis framework"
 authors = ["Peat Bakke <peat@peat.org>"]
+license-file = "LICENSE.txt"
 default-run = "desdemona"
+repository = "https://github.com/peat/desdemona"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
