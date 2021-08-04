@@ -69,26 +69,39 @@ impl Game {
     /// Finds all of the valid moves for the current player.
     #[allow(clippy::manual_flatten)]
     pub fn valid_moves(&self, player: Disc) -> Vec<ValidMove> {
-        let mut raw_moves = Vec::with_capacity(8); // maximum of 8 possible moves
+        let mut raw_moves = Vec::with_capacity(64);
 
-        for p in self.board.positions_of(Some(player)) {
-            for om in self.moves_for_occupied(player, p) {
-                if let Some(m) = om {
-                    raw_moves.push(m);
+        let player_count = match player {
+            Disc::Dark => self.dark,
+            Disc::Light => self.light,
+        };
+
+        // pick our search strategy -- if there are fewer player discs
+        // than empty positions, then search for moves starting at those
+        // discs, otherwise, search for moves starting in empty positions.
+        //
+        // Note: these could be implemented with map/flatten/collect,
+        // however it's considerably slower.
+
+        if player_count <= self.empty {
+            // smaller number of origin discs; search occupied pieces
+            for p in self.board.positions_of(Some(player)) {
+                for om in self.moves_for_occupied(player, p) {
+                    if let Some(m) = om {
+                        raw_moves.push(m);
+                    }
+                }
+            }
+        } else {
+            // smaller number of empty discs; search occupied pieces
+            for p in self.board.positions_of(None) {
+                for om in self.moves_for_empty(player, p) {
+                    if let Some(m) = om {
+                        raw_moves.push(m);
+                    }
                 }
             }
         }
-
-        // NOTE: we could do this, but it's slower than the allocating with capacity and
-        // manually flattening.
-        //
-        // fetch all of the valid moves for the current board and active disc color
-        // let mut initial_moves: Vec<ValidMove> = self
-        //     .board
-        //     .positions_of(Some(disc))
-        //     .map(|p| self.moves_for_occupied(p))
-        //     .flatten()
-        //     .collect();
 
         // merge all of the flips with the same position
         Self::consolidate_moves(&mut raw_moves)

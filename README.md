@@ -47,7 +47,7 @@ To play against a particular solver, use the `-s` flag. For example, to play aga
 
 ## Benchmarks
 
-Currently plays a full random game in ~600µs, and can be parallelized to ~100µs (see `bin/desstress` above). This isn't important for casual play, but it's handy for analysis!
+Currently plays a full random game in ~400µs, and can be parallelized to ~65µs (see `bin/desstress` above). This isn't important for casual play, but it's handy for analysis!
 
 ## Copyright, License
 
