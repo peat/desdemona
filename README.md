@@ -16,18 +16,17 @@ Would you like to play a game? In your terminal? How about Othello? You know, th
 
 Desdemona is an Othello sandbox, providing both a game you can play, as well as a simulation framework for developing your own strategies to play against each other.
 
+## Installing
+
+`cargo install desdemona` does the trick.
+
 ## Running
 
-`cargo run --release` will start a game for you to play.
-
-The `--release` flag is particularly important if you run compute intensive strategies like the Monte Carlo solver.
+`desdemona` will start a game. For help, add the `--help` flag.
 
 ## Binaries
 
 * `desdemona` (the default) starts a game of Othello.
-
-To run the other programs, use `cargo run --bin NAME`.
-
 * `desgame` prints out a complete, randomly generated game.
 * `desstress` runs stress tests and benchmarking (note: please use cargo's `--release` flag)
 * `desdata` regenerates data for the static data file if needed (`src/data.rs`).
@@ -44,11 +43,11 @@ Desdemona has a simple framework for building your own game play strategies, and
 
 To play against a particular solver, use the `-s` flag. For example, to play against the Monte solver:
 
-`cargo run --release --bin -- -s monte`
+`desdemona -s monte`
 
 ## Benchmarks
 
-Currently plays a full random game in ~600µs, and can be parallelized to ~100µs (see `bin/stress` above). This isn't important for casual play, but it's handy for analysis!
+Currently plays a full random game in ~600µs, and can be parallelized to ~100µs (see `bin/desstress` above). This isn't important for casual play, but it's handy for analysis!
 
 ## Copyright, License
 
