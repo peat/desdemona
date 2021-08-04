@@ -1,12 +1,13 @@
 [package]
 name = "desdemona"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2018"
-description = "Terminal Othello and analysis framework"
+description = "Command line Othello and simulation framework"
 authors = ["Peat Bakke <peat@peat.org>"]
-license-file = "LICENSE.txt"
+license = "GPL-3.0"
 default-run = "desdemona"
 repository = "https://github.com/peat/desdemona"
+categories = ["command-line-utilities", "games", "simulation"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
