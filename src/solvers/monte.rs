@@ -3,6 +3,7 @@ use crate::{Disc, Game, ValidMove};
 
 use rayon::prelude::*;
 
+#[derive(Default)]
 pub struct Monte {
     name: String,
 }
@@ -16,7 +17,7 @@ impl Solver for Monte {
         let results: Vec<(usize, ValidMove)> = game
             .valid_moves(game.turn)
             .into_par_iter()
-            .map(|vm| (self.wins_for(&game, &vm), vm))
+            .map(|vm| (self.wins_for(game, &vm), vm))
             .collect();
 
         let (_, valid_move) = results.into_iter().max_by(|a, b| a.0.cmp(&b.0))?;

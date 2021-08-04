@@ -37,7 +37,7 @@ mod tests {
         let vm2 = ValidMove::new(Position::new(0), vec_usize_to_positions(&flips2));
         let vm3 = ValidMove::new(Position::new(0), vec_usize_to_positions(&flips3));
 
-        let mut sortable = vec![vm2.clone(), vm3.clone(), vm1.clone()];
+        let mut sortable = vec![vm2, vm3.clone(), vm1.clone()];
         let sorted = Minimize::sort(&mut sortable);
         assert_eq!(sorted.first(), Some(&vm3));
         assert_eq!(sorted.pop(), Some(vm1));
