@@ -140,12 +140,12 @@ fn print_transcript(transcript: &[Play]) {
 }
 
 fn get_args() -> ArgMatches<'static> {
-    App::new("othello")
+    App::new("desdemona")
         .version("0.1")
         .author("Peat Bakke <peat@peat.org>")
         .about("Would you like to play a game?")
         .args_from_usage(
-            "-s, --strategy=[STRATEGY]       'Determine the computer's strategy: minimize, maximize, random, simple'"
+            "-s, --strategy=[STRATEGY]       'Determine the computer's strategy: minimize, maximize, random, simple, monte'"
         )
         .get_matches()
 }
