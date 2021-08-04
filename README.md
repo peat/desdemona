@@ -22,21 +22,35 @@ Desdemona is an Othello sandbox, providing both a game you can play, as well as 
 
 The `--release` flag is particularly important if you run compute intensive strategies like the Monte Carlo solver.
 
-## Binaries 
+## Binaries
 
 * `desdemona` (the default) starts a game of Othello.
 
 To run the other programs, use `cargo run --bin NAME`.
 
-* `game` prints out a complete, randomly generated game.
-* `stress` runs stress tests and benchmarking (note: please use cargo's `--release` flag)
-* `data` regenerates data for the static data file if needed (`src/data.rs`).
+* `desgame` prints out a complete, randomly generated game.
+* `desstress` runs stress tests and benchmarking (note: please use cargo's `--release` flag)
+* `desdata` regenerates data for the static data file if needed (`src/data.rs`).
+
+## Solvers
+
+Desdemona has a simple framework for building your own game play strategies, and includes five different "solvers" in the `src/solvers` directory:
+
+* `Maximize` which plays the move that flips the maximum number of discs.
+* `Minimize` is the opposite, playing the move that flips the least number of discs.
+* `Simple` plays the first move it discovers.
+* `Random` plays a random valid move.
+* `Monte` runs a Monte Carlo simulation on which move is the most likely to result in a win.
+
+To play against a particular solver, use the `-s` flag. For example, to play against the Monte solver:
+
+`cargo run --release --bin -- -s monte`
 
 ## Benchmarks
 
 Currently plays a full random game in ~600µs, and can be parallelized to ~100µs (see `bin/stress` above). This isn't important for casual play, but it's handy for analysis!
 
-## Copyright, etc.
+## Copyright, License
 
 Copyright 2021, Peat Bakke <peat@peat.org>.
 
