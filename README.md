@@ -14,7 +14,7 @@ Would you like to play a game? In your terminal? How about Othello? You know, th
 8 · · · · · · · ·
 ```
 
-Desdemona is an Othello sandbox, providing both a game you can play, as well as a simulation framework for developing your own strategies to play against each other.
+Desdemona provides both a game you can play, as well as a simulation framework for developing your own strategies to play against each other.
 
 ## Installing
 
@@ -33,17 +33,19 @@ Desdemona is an Othello sandbox, providing both a game you can play, as well as 
 
 ## Solvers
 
-Desdemona has a simple framework for building your own game play strategies, and includes five different "solvers" in the `src/solvers` directory:
+Desdemona has a simple framework for building your own game play strategies, and includes five different (and very basic) "solvers" in the `src/solvers` directory:
 
 * `Maximize` which plays the move that flips the maximum number of discs.
 * `Minimize` is the opposite, playing the move that flips the least number of discs.
 * `Simple` plays the first move it discovers.
 * `Random` plays a random valid move.
-* `Monte` runs a Monte Carlo simulation on which move is the most likely to result in a win.
+* `Monte` runs a (very limited) Monte Carlo simulation on which move is the most likely to result in a win.
 
 To play against a particular solver, use the `-s` flag. For example, to play against the Monte solver:
 
 `desdemona -s monte`
+
+_None of these strategies are particularly effective when playing against skilled humans; they have no concept of strategy involving corner values, static pieces, etc. If you'd like to contribute something more interesting, please do!_  
 
 ## Benchmarks
 
