@@ -20,6 +20,8 @@ pub fn main() -> Result<(), io::Error> {
         None => DEFAULT_GAMES,
     };
 
+    let verbose = config.occurrences_of("v") > 0;
+
     println!(
         "desvs: playing dark ({}) vs light ({}) for {} games",
         dark_strategy.name(),
@@ -40,6 +42,19 @@ pub fn main() -> Result<(), io::Error> {
                 Some(valid_move) => game.play_valid_move(valid_move),
                 None => game.pass(),
             }
+        }
+
+        if verbose {
+            println!(
+                "{},{},{}",
+                game.dark,
+                game.light,
+                game.transcript
+                    .iter()
+                    .map(|p| format!("{}", p))
+                    .collect::<Vec<String>>()
+                    .join("")
+            );
         }
 
         // tally up the points
@@ -75,7 +90,8 @@ fn get_args() -> ArgMatches<'static> {
         .author("Peat Bakke <peat@peat.org>")
         .about("Plays two strategies against each other")
         .args_from_usage(
-            "-g, --games=[COUNT]        'How many games to play (default 1,000)'
+            "-v                         'Verbose mode'
+            -g, --games=[COUNT]        'How many games to play (default 1,000)'
             -l, --light=<STRATEGY>       'Determine the light player's strategy: minimize, maximize, random, simple, monte'
             -d, --dark=<STRATEGY>       'Determine the dark player's strategy: minimize, maximize, random, simple, monte'"
         )
