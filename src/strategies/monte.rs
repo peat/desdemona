@@ -27,7 +27,7 @@ impl Strategy for Monte {
 }
 
 impl Monte {
-    const ROUNDS: usize = 5_000;
+    const ROUNDS: usize = 1000;
 
     pub fn new() -> Self {
         Self {
