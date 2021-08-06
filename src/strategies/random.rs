@@ -1,4 +1,4 @@
-use crate::solvers::Solver;
+use crate::strategies::Strategy;
 use crate::{Game, ValidMove};
 
 use rand::prelude::*;
@@ -14,7 +14,7 @@ impl Random {
     }
 }
 
-impl Solver for Random {
+impl Strategy for Random {
     fn name(&self) -> &str {
         "Random v1.0"
     }

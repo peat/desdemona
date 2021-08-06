@@ -1,9 +1,9 @@
-use crate::solvers::Solver;
+use crate::strategies::Strategy;
 use crate::{Game, ValidMove};
 
 pub struct Simple {}
 
-impl Solver for Simple {
+impl Strategy for Simple {
     fn name(&self) -> &str {
         "Simple v1.0"
     }

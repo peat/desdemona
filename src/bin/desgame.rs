@@ -1,5 +1,5 @@
-use desdemona::solvers::Random;
-use desdemona::solvers::Solver;
+use desdemona::strategies::Random;
+use desdemona::strategies::Strategy;
 use desdemona::Game;
 
 fn main() {

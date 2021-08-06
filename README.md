@@ -33,7 +33,7 @@ Desdemona provides both a game you can play, as well as a simulation framework f
 
 ## Solvers
 
-Desdemona has a simple framework for building your own game play strategies, and includes five different (and very basic) "solvers" in the `src/solvers` directory:
+Desdemona has a simple framework for building your own game play strategies, and includes five different (and very basic) "strategies" in the `src/strategies` directory:
 
 * `Maximize` which plays the move that flips the maximum number of discs.
 * `Minimize` is the opposite, playing the move that flips the least number of discs.

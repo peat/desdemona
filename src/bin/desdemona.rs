@@ -1,5 +1,5 @@
 use clap::{App, ArgMatches};
-use desdemona::solvers::*;
+use desdemona::strategies::*;
 use desdemona::{Disc, Game, Play, Position};
 use std::io::{self, Write};
 use text_io::read;
@@ -18,7 +18,7 @@ fn main() {
 
     let mut game = Game::new();
 
-    let mut solver: Box<dyn Solver> = match config.value_of("strategy") {
+    let mut solver: Box<dyn Strategy> = match config.value_of("strategy") {
         None => Box::new(Minimize {}),
         Some(strategy) => match strategy {
             "random" => Box::new(Random::new()),

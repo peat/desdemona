@@ -11,7 +11,7 @@ pub use monte::Monte;
 pub use random::Random;
 pub use simple::Simple;
 
-pub trait Solver {
+pub trait Strategy {
     fn name(&self) -> &str;
 
     fn solve(&mut self, game: &mut Game) {

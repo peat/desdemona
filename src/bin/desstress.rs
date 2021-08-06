@@ -1,4 +1,4 @@
-use desdemona::solvers::{Random, Solver};
+use desdemona::strategies::{Random, Strategy};
 use desdemona::{Disc, Game};
 use rand::prelude::*;
 use rayon::prelude::*;

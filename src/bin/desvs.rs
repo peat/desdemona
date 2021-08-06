@@ -1,5 +1,5 @@
 use clap::{App, ArgMatches};
-use desdemona::solvers::*;
+use desdemona::strategies::*;
 use desdemona::{Disc, Game, Play, Position};
 use std::fmt::Error;
 use std::io::{self, Write};
@@ -14,8 +14,8 @@ pub fn main() -> Result<(), io::Error> {
     let mut light_wins: usize = 0;
     let mut light_points: usize = 0;
 
-    let mut dark_solver: Box<dyn Solver> = dark_solver(&config)?;
-    let mut light_solver: Box<dyn Solver> = light_solver(&config)?;
+    let mut dark_solver: Box<dyn Strategy> = dark_solver(&config)?;
+    let mut light_solver: Box<dyn Strategy> = light_solver(&config)?;
     let game_count: usize = match config.value_of("games") {
         Some(input) => input.parse().unwrap_or(DEFAULT_GAMES),
         None => DEFAULT_GAMES,
@@ -83,16 +83,16 @@ fn get_args() -> ArgMatches<'static> {
         .get_matches()
 }
 
-fn light_solver(config: &ArgMatches) -> Result<Box<dyn Solver>, io::Error> {
+fn light_solver(config: &ArgMatches) -> Result<Box<dyn Strategy>, io::Error> {
     parse_solver(config, "light")
 }
 
-fn dark_solver(config: &ArgMatches) -> Result<Box<dyn Solver>, io::Error> {
+fn dark_solver(config: &ArgMatches) -> Result<Box<dyn Strategy>, io::Error> {
     parse_solver(config, "dark")
 }
 
-fn parse_solver(config: &ArgMatches, name: &str) -> Result<Box<dyn Solver>, io::Error> {
-    let solver: Box<dyn Solver> = match config.value_of(name) {
+fn parse_solver(config: &ArgMatches, name: &str) -> Result<Box<dyn Strategy>, io::Error> {
+    let solver: Box<dyn Strategy> = match config.value_of(name) {
         None => Box::new(Minimize {}),
         Some(strategy) => match strategy {
             "random" => Box::new(Random::new()),

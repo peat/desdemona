@@ -1,4 +1,4 @@
-use crate::solvers::{Random, Solver};
+use crate::strategies::{Random, Strategy};
 use crate::{Disc, Game, ValidMove};
 
 use rayon::prelude::*;
@@ -8,7 +8,7 @@ pub struct Monte {
     name: String,
 }
 
-impl Solver for Monte {
+impl Strategy for Monte {
     fn name(&self) -> &str {
         &self.name
     }

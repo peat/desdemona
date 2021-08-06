@@ -1,4 +1,4 @@
-use crate::solvers::Solver;
+use crate::strategies::Strategy;
 use crate::{Game, ValidMove};
 
 pub struct Minimize {}
@@ -10,7 +10,7 @@ impl Minimize {
     }
 }
 
-impl Solver for Minimize {
+impl Strategy for Minimize {
     fn name(&self) -> &str {
         "Minimize v1.0"
     }
