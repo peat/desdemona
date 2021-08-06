@@ -71,17 +71,17 @@ impl Game {
     pub fn valid_moves(&self, player: Disc) -> Vec<ValidMove> {
         let mut raw_moves = Vec::with_capacity(64);
 
-        let player_count = match player {
-            Disc::Dark => self.dark,
-            Disc::Light => self.light,
-        };
-
         // pick our search strategy -- if there are fewer player discs
         // than empty positions, then search for moves starting at those
         // discs, otherwise, search for moves starting in empty positions.
         //
         // Note: these could be implemented with map/flatten/collect,
         // however it's considerably slower.
+
+        let player_count = match player {
+            Disc::Dark => self.dark,
+            Disc::Light => self.light,
+        };
 
         if player_count <= self.empty {
             // smaller number of origin discs; search occupied pieces
@@ -168,35 +168,6 @@ impl Game {
             .map(move |line| self.move_from_empty(player, line))
     }
 
-    fn move_from_empty(&self, player: Disc, indexes: &[usize]) -> Option<ValidMove> {
-        let mut targets = Vec::with_capacity(indexes.len());
-        for idx in indexes {
-            // ignore the first position; it's not a target, it's where we'll be placing the piece!
-            if idx == indexes.first()? {
-                continue;
-            }
-
-            // no disc? return.
-            let disc = self.board.get(*idx)?;
-
-            // possible target disc to flip!
-            if disc == player.opposite() {
-                targets.push(Position::new(*idx));
-                continue;
-            }
-
-            // we've found our own color -- if we have targets, it's a valid move!
-            if disc == player {
-                if targets.is_empty() {
-                    return None;
-                }
-                return Some(ValidMove::new(Position::new(*indexes.first()?), targets));
-            }
-        }
-
-        None
-    }
-
     fn move_from_occupied(&self, player: Disc, indexes: &[usize]) -> Option<ValidMove> {
         let mut targets = Vec::with_capacity(indexes.len());
 
@@ -223,6 +194,35 @@ impl Game {
 
                 // we have targets! this is a legitimate line; return a valid move!
                 return Some(ValidMove::new(Position::new(*idx), targets));
+            }
+        }
+
+        None
+    }
+
+    fn move_from_empty(&self, player: Disc, indexes: &[usize]) -> Option<ValidMove> {
+        let mut targets = Vec::with_capacity(indexes.len());
+        for idx in indexes {
+            // ignore the first position; it's not a target, it's where we'll be placing the piece!
+            if idx == indexes.first()? {
+                continue;
+            }
+
+            // no disc? return.
+            let disc = self.board.get(*idx)?;
+
+            // possible target disc to flip!
+            if disc == player.opposite() {
+                targets.push(Position::new(*idx));
+                continue;
+            }
+
+            // we've found our own color -- if we have targets, it's a valid move!
+            if disc == player {
+                if targets.is_empty() {
+                    return None;
+                }
+                return Some(ValidMove::new(Position::new(*indexes.first()?), targets));
             }
         }
 
