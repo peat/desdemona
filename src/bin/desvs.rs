@@ -46,7 +46,9 @@ pub fn main() -> Result<(), io::Error> {
 
         if verbose {
             println!(
-                "{},{},{}",
+                "{},{},{},{},{}",
+                dark_strategy.name(),
+                light_strategy.name(),
                 game.dark,
                 game.light,
                 game.transcript
