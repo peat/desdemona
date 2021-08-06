@@ -43,7 +43,7 @@ impl Monte {
             let mut new_game = game.clone();
             // update it with the given move
             new_game.play_valid_move(valid_move.clone());
-            // solve the remainder of plays with the random solver
+            // solve the remainder of plays with the random strategy
             random.solve(&mut new_game);
 
             // tally whether this is a win for the current player (the original game.turn)

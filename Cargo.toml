@@ -16,7 +16,7 @@ categories = ["command-line-utilities", "games", "simulation"]
 debug = true
 
 [dependencies]
-rand = "0" # for bin/stress and solver/random
+rand = "0" # for bin/stress and strategy/random
 text_io = "0" # for bin/desdemona
 clap = "2" # for bin/desdemona
-rayon = "1" # for solver/monte
+rayon = "1" # for strategy/monte

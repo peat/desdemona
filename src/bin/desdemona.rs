@@ -18,7 +18,7 @@ fn main() {
 
     let mut game = Game::new();
 
-    let mut solver: Box<dyn Strategy> = match config.value_of("strategy") {
+    let mut strategy: Box<dyn Strategy> = match config.value_of("strategy") {
         None => Box::new(Minimize {}),
         Some(strategy) => match strategy {
             "random" => Box::new(Random::new()),
@@ -36,7 +36,7 @@ fn main() {
         },
     };
 
-    println!("Desdemona!\n\nComputer Strategy: {}\n\nYou are the dark discs.\nPlace a disc with a coordinate (eg: \"a2\"), or pass with \"p\".\nTo get a transcript of the game, type \"t\".\nTo quit, \"q\".\nHave fun!\n", solver.name());
+    println!("Desdemona!\n\nComputer Strategy: {}\n\nYou are the dark discs.\nPlace a disc with a coordinate (eg: \"a2\"), or pass with \"p\".\nTo get a transcript of the game, type \"t\".\nTo quit, \"q\".\nHave fun!\n", strategy.name());
 
     while !game.is_complete {
         println!("{}", game);
@@ -86,7 +86,7 @@ fn main() {
             print!("Desdemona...");
             std::io::stdout().flush().unwrap();
             // opponent (light) plays a random valid move.
-            match solver.next_play(&game) {
+            match strategy.next_play(&game) {
                 Some(vm) => game.play_valid_move(vm),
                 None => game.pass(),
             }
