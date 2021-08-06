@@ -27,13 +27,14 @@ Desdemona provides both a game you can play, as well as a simulation framework f
 ## Binaries
 
 * `desdemona` (the default) starts a game of Othello.
+* `desvs` plays two strategies against each other.
 * `desgame` prints out a complete, randomly generated game.
 * `desstress` runs stress tests and benchmarking (note: please use cargo's `--release` flag)
 * `desdata` regenerates data for the static data file if needed (`src/data.rs`).
 
-## Solvers
+## Available Strategies 
 
-Desdemona has a simple framework for building your own game play strategies, and includes five different (and very basic) "strategies" in the `src/strategies` directory:
+Desdemona has a simple framework for building your own game play strategies, and includes five different (and very basic) strategies in the `src/strategies` directory:
 
 * `Maximize` which plays the move that flips the maximum number of discs.
 * `Minimize` is the opposite, playing the move that flips the least number of discs.
@@ -41,11 +42,15 @@ Desdemona has a simple framework for building your own game play strategies, and
 * `Random` plays a random valid move.
 * `Monte` runs a (very limited) Monte Carlo simulation on which move is the most likely to result in a win.
 
-To play against a particular solver, use the `-s` flag. For example, to play against the Monte solver:
+To play against a particular strategy, use the `-s` flag. For example, to play against the Monte strategy:
 
 `desdemona -s monte`
 
-_None of these strategies are particularly effective when playing against skilled humans; they have no concept of strategy involving corner values, static pieces, etc. If you'd like to contribute something more interesting, please do!_  
+## Notes on Strategies
+
+You can use the `desvs` ("desdemona verses") program to compare the strengths of different strategies. For example, the `Maximize` strategy will _always_ lose to the `Minimize` strategy.
+
+None of these strategies are particularly effective when playing against skilled humans; they have no concept of strategy involving corner values, static pieces, etc. If you'd like to contribute something more interesting, please do!
 
 ## Benchmarks
 
