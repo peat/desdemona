@@ -48,7 +48,7 @@ To play against a particular strategy, use the `-s` flag. For example, to play a
 
 ## Notes on Strategies
 
-You can use the `desvs` ("desdemona verses") program to compare the strengths of different strategies. For example, the `Maximize` strategy will _always_ lose to the `Minimize` strategy.
+You can use the `desvs` ("desdemona verses") program to compare the strengths of different strategies.
 
 None of these strategies are particularly effective when playing against skilled humans; they have no concept of strategy involving corner values, static pieces, etc. If you'd like to contribute something more interesting, please do!
 
