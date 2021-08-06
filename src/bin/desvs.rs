@@ -1,8 +1,7 @@
 use clap::{App, ArgMatches};
 use desdemona::strategies::*;
-use desdemona::{Disc, Game, Play, Position};
-use std::fmt::Error;
-use std::io::{self, Write};
+use desdemona::{Disc, Game};
+use std::io;
 
 const DEFAULT_GAMES: usize = 1000;
 
