@@ -5,7 +5,11 @@ pub struct Simple {}
 
 impl Strategy for Simple {
     fn name(&self) -> &str {
-        "Simple v1.0"
+        "Simple"
+    }
+
+    fn version(&self) -> &str {
+        "0.1"
     }
 
     fn next_play(&mut self, game: &Game) -> Option<ValidMove> {

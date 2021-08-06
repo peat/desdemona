@@ -12,7 +12,11 @@ impl Maximize {
 
 impl Strategy for Maximize {
     fn name(&self) -> &str {
-        "Maximize v1.0"
+        "Maximize"
+    }
+
+    fn version(&self) -> &str {
+        "0.1"
     }
 
     fn next_play(&mut self, game: &Game) -> Option<ValidMove> {

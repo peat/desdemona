@@ -12,7 +12,11 @@ impl Minimize {
 
 impl Strategy for Minimize {
     fn name(&self) -> &str {
-        "Minimize v1.0"
+        "Minimize"
+    }
+
+    fn version(&self) -> &str {
+        "0.1"
     }
 
     fn next_play(&mut self, game: &Game) -> Option<ValidMove> {

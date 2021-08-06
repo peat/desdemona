@@ -20,16 +20,12 @@ fn main() {
 
     let mut strategy: Box<dyn Strategy> = match config.value_of("strategy") {
         None => Box::new(Minimize {}),
-        Some(strategy) => match strategy {
-            "random" => Box::new(Random::new()),
-            "minimize" => Box::new(Minimize {}),
-            "maximize" => Box::new(Maximize {}),
-            "simple" => Box::new(Simple {}),
-            "monte" => Box::new(Monte::new()),
-            e => {
+        Some(strategy) => match Strategies::from_str(strategy) {
+            Some(s) => s,
+            None => {
                 println!(
                     "Unknown strategy {} -- try random, minimize, maximize, monte, or simple.",
-                    e
+                    strategy
                 );
                 return;
             }

@@ -16,7 +16,11 @@ impl Random {
 
 impl Strategy for Random {
     fn name(&self) -> &str {
-        "Random v1.0"
+        "Random"
+    }
+
+    fn version(&self) -> &str {
+        "0.1"
     }
 
     fn next_play(&mut self, game: &Game) -> Option<ValidMove> {

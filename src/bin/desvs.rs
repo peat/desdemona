@@ -109,16 +109,12 @@ fn dark_strategy(config: &ArgMatches) -> Result<Box<dyn Strategy>, io::Error> {
 fn parse_strategy(config: &ArgMatches, name: &str) -> Result<Box<dyn Strategy>, io::Error> {
     let strategy: Box<dyn Strategy> = match config.value_of(name) {
         None => Box::new(Minimize {}),
-        Some(strategy) => match strategy {
-            "random" => Box::new(Random::new()),
-            "minimize" => Box::new(Minimize {}),
-            "maximize" => Box::new(Maximize {}),
-            "simple" => Box::new(Simple {}),
-            "monte" => Box::new(Monte::new()),
-            e => {
+        Some(strategy) => match Strategies::from_str(strategy) {
+            Some(s) => s,
+            None => {
                 let error = format!(
                     "Unknown strategy {} -- try random, minimize, maximize, monte, or simple.",
-                    e
+                    strategy
                 );
                 return Err(io::Error::new(io::ErrorKind::InvalidInput, error));
             }

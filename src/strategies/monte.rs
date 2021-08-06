@@ -4,13 +4,15 @@ use crate::{Disc, Game, ValidMove};
 use rayon::prelude::*;
 
 #[derive(Default)]
-pub struct Monte {
-    name: String,
-}
+pub struct Monte {}
 
 impl Strategy for Monte {
     fn name(&self) -> &str {
-        &self.name
+        "Monte"
+    }
+
+    fn version(&self) -> &str {
+        "0.1"
     }
 
     fn next_play(&mut self, game: &Game) -> Option<ValidMove> {
@@ -27,13 +29,7 @@ impl Strategy for Monte {
 }
 
 impl Monte {
-    const ROUNDS: usize = 1000;
-
-    pub fn new() -> Self {
-        Self {
-            name: format!("Monte 1.0 ({} rounds)", Self::ROUNDS),
-        }
-    }
+    const ROUNDS: usize = 100;
 
     fn wins_for(&self, game: &Game, valid_move: &ValidMove) -> usize {
         let mut random = Random::new();
