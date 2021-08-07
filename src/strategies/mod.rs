@@ -5,7 +5,7 @@ mod monte;
 mod random;
 mod simple;
 
-use crate::{Game, ValidMove};
+use crate::Game;
 pub use constrain::Constrain;
 pub use maximize::Maximize;
 pub use minimize::Minimize;
@@ -59,13 +59,13 @@ pub trait Strategy: Sync {
     fn solve(&mut self, game: &mut Game) {
         while !game.is_complete {
             match self.next_play(game) {
-                Some(valid_move) => game.play_valid_move(valid_move),
+                Some(valid_move) => game.play(valid_move),
                 None => game.pass(),
-            }
+            };
         }
     }
 
-    fn next_play(&mut self, game: &Game) -> Option<ValidMove>;
+    fn next_play(&mut self, game: &Game) -> Option<usize>;
 
     fn bench(&mut self, count: usize) {
         for _ in 0..count {

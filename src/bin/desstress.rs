@@ -6,7 +6,7 @@ use std::io::{self, Write};
 use std::time::Instant;
 
 // grinder loops
-const REPLAY_LOOPS: usize = 10_000;
+const REPLAY_LOOPS: usize = 100_000;
 
 fn main() -> Result<(), io::Error> {
     replay_loops()?;
@@ -53,9 +53,9 @@ fn divergence_grinder() -> Option<(Game, Game)> {
     // complete a random move game
     while !game.is_complete {
         match game.valid_moves(game.turn).into_iter().choose(&mut rng) {
-            Some(vm) => game.play_valid_move(vm),
+            Some(vm) => game.play(vm),
             None => game.pass(),
-        }
+        };
     }
 
     let tg = match Game::from_transcript(&game.transcript) {

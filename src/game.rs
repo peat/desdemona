@@ -50,9 +50,9 @@ impl Game {
         let mut game = Game::new();
         for p in transcript {
             match p {
-                Play::Move(p) => game.play_valid_move(game.validate_move(game.turn, *p)?),
+                Play::Move(p) => game.play(game.validate_move(game.turn, p.into())?),
                 Play::Pass => game.pass(),
-            }
+            };
         }
 
         game.validate_completion();
@@ -61,67 +61,67 @@ impl Game {
     }
 
     /// Determines if a position is a valid move for the current player.
-    pub fn validate_move(&self, player: Disc, position: Position) -> Option<ValidMove> {
-        let mut moves_for_empty = self.moves_for_empty(player, position).flatten().collect();
-        Self::consolidate_moves(&mut moves_for_empty).pop()
+    pub fn validate_move(&self, player: Disc, index: usize) -> Option<usize> {
+        if self.can_move(player, index) {
+            return Some(index);
+        }
+
+        None
     }
 
     /// Finds all of the valid moves for the current player.
     #[allow(clippy::manual_flatten)]
-    pub fn valid_moves(&self, player: Disc) -> Vec<ValidMove> {
-        let mut raw_moves = Vec::with_capacity(64);
-
-        // pick our search strategy -- if there are fewer player discs
-        // than empty positions, then search for moves starting at those
-        // discs, otherwise, search for moves starting in empty positions.
-        //
-        // Note: these could be implemented with map/flatten/collect,
-        // however it's considerably slower.
-
-        let player_count = match player {
-            Disc::Dark => self.dark,
-            Disc::Light => self.light,
-        };
-
-        if player_count <= self.empty {
-            // smaller number of origin discs; search occupied pieces
-            for p in self.board.positions_of(Some(player)) {
-                for om in self.moves_for_occupied(player, p) {
-                    if let Some(m) = om {
-                        raw_moves.push(m);
-                    }
-                }
-            }
-        } else {
-            // smaller number of empty positions; search empty positions
-            for p in self.board.positions_of(None) {
-                for om in self.moves_for_empty(player, p) {
-                    if let Some(m) = om {
-                        raw_moves.push(m);
-                    }
-                }
+    pub fn valid_moves(&self, player: Disc) -> Vec<usize> {
+        // Note: this could be implemented with map/flatten/collect,
+        // however it's considerably slower than allocating up front.
+        let mut raw_moves: Vec<usize> = Vec::with_capacity(64);
+        for p in self.board.positions_of(None) {
+            if self.can_move(player, p.into()) {
+                raw_moves.push(p.into())
             }
         }
 
-        // merge all of the flips with the same position
-        Self::consolidate_moves(&mut raw_moves)
+        raw_moves.sort_unstable();
+        raw_moves.dedup();
+
+        raw_moves
     }
 
-    pub fn play_valid_move(&mut self, valid_move: ValidMove) {
-        // do the score accounting before we consume all of the moves
-        self.update_scores(&valid_move);
+    // a result of None indicates it's not a valid move
+    pub fn play(&mut self, position: usize) {
+        // find the flips for playing that position
+        let mut flips = self.flips_for(position).unwrap();
 
-        // add the disc to the played position
-        self.board.set(valid_move.position.into(), self.turn);
+        // save this for scoring updates
+        let changed = flips.len();
+
+        // add the position to discs to set
+        flips.push(position);
 
         // iterate through the flips and set those discs to the current player
-        for p in valid_move.flips {
-            self.board.set(p.into(), self.turn);
+        for p in flips.iter() {
+            self.board.set(*p, self.turn);
         }
 
         // save the played position to the transcript
-        self.transcript.push(Play::Move(valid_move.position));
+        self.transcript.push(Play::Move(Position::new(position)));
 
+        // update the score and completeness
+        if self.turn == Disc::Dark {
+            self.dark += changed + 1; // include the newly placed piece
+            self.light -= changed; // all of the flipped discs
+        } else {
+            self.light += changed + 1; // include the newly placed piece
+            self.dark -= changed; // all of the flipped discs
+        }
+
+        self.empty -= 1;
+
+        if self.empty == 0 {
+            self.is_complete = true;
+        }
+
+        // update the turn
         self.turn = self.turn.opposite();
     }
 
@@ -136,72 +136,30 @@ impl Game {
         }
     }
 
-    pub fn validate_completion(&mut self) {
+    fn validate_completion(&mut self) {
         // if there are no more valid moves for either player, then the game is complete.
         self.is_complete =
             self.valid_moves(Disc::Dark).is_empty() && self.valid_moves(Disc::Light).is_empty()
     }
 
-    /// Returns any valid moves associated with a given occupied position.
-    /// They still need to be consolidated; use validate_move()
-    fn moves_for_occupied(
-        &self,
-        player: Disc,
-        position: Position,
-    ) -> impl Iterator<Item = Option<ValidMove>> + '_ {
-        position
-            .lines_for()
-            .iter()
-            .map(move |line| self.move_from_occupied(player, line))
-    }
+    pub fn can_move(&self, player: Disc, index: usize) -> bool {
+        // basic check ... occupied?
+        if self.board.get(index).is_some() {
+            return false;
+        }
 
-    /// Returns any valid moves associated with a given occupied position.
-    /// They still need to be consolidated; use validate_move()
-    fn moves_for_empty(
-        &self,
-        player: Disc,
-        position: Position,
-    ) -> impl Iterator<Item = Option<ValidMove>> + '_ {
-        position
-            .lines_for()
-            .iter()
-            .map(move |line| self.move_from_empty(player, line))
-    }
-
-    fn move_from_occupied(&self, player: Disc, indexes: &[usize]) -> Option<ValidMove> {
-        let mut targets = Vec::with_capacity(indexes.len());
-
-        for idx in indexes {
-            // ignore the first position; it's occupied by the originating position!
-            if idx == indexes.first()? {
-                continue;
-            }
-
-            if let Some(disc) = self.board.get(*idx) {
-                if disc == player.opposite() {
-                    // if the disc is the opposition color, put the position in targets and move on
-                    targets.push(Position::new(*idx));
-                    continue;
-                }
-
-                if disc == player {
-                    return None;
-                }
-            } else {
-                if targets.is_empty() {
-                    return None;
-                }
-
-                // we have targets! this is a legitimate line; return a valid move!
-                return Some(ValidMove::new(Position::new(*idx), targets));
+        for line in self.board.lines_for(index) {
+            if self.move_from_empty(player, line).is_some() {
+                return true;
             }
         }
 
-        None
+        false
     }
 
-    fn move_from_empty(&self, player: Disc, indexes: &[usize]) -> Option<ValidMove> {
-        let mut targets = Vec::with_capacity(indexes.len());
+    fn move_from_empty(&self, player: Disc, indexes: &[usize]) -> Option<usize> {
+        let mut line_started = false;
+
         for idx in indexes {
             // ignore the first position; it's not a target, it's where we'll be placing the piece!
             if idx == indexes.first()? {
@@ -213,62 +171,72 @@ impl Game {
 
             // possible target disc to flip!
             if disc == player.opposite() {
-                targets.push(Position::new(*idx));
+                line_started = true;
                 continue;
             }
 
             // we've found our own color -- if we have targets, it's a valid move!
             if disc == player {
-                if targets.is_empty() {
+                if !line_started {
                     return None;
                 }
-                return Some(ValidMove::new(Position::new(*indexes.first()?), targets));
+
+                return indexes.first().cloned();
             }
         }
 
         None
     }
 
-    fn consolidate_moves(valid_moves: &mut Vec<ValidMove>) -> Vec<ValidMove> {
-        // sort 'em by position so that the same positions are sequential in the list.
-        valid_moves.sort_by(|a, b| a.position.cmp(&b.position));
+    pub fn flips_for(&self, index: usize) -> Option<Vec<usize>> {
+        let player = self.turn;
+        let opposition = self.turn.opposite();
 
-        // set up our results holding the merged ValidMoves
-        let mut output = Vec::with_capacity(valid_moves.len());
+        // reusable buffer for collecting lines
+        let mut line_flips = Vec::with_capacity(8);
 
-        // pop through the initial moves, pushing them to the output, and merging as needed
-        while let Some(mut next_vm) = valid_moves.pop() {
-            // get the last move in the output, or ensure there's a last!
-            let last_vm: &mut ValidMove = match output.last_mut() {
-                Some(last_vm) => last_vm,
-                None => {
-                    output.push(next_vm);
+        // all flips for this particular move
+        let mut flips = Vec::with_capacity(32);
+
+        for line in self.board.lines_for(index) {
+            line_flips.clear();
+            for line_index in line.iter() {
+                // skip the position being analyzed
+                if line_index == &index {
                     continue;
                 }
-            };
 
-            // if we have a repeat of the same position, take the flips
-            // otherwise, push the next_vm
-            if last_vm.position == next_vm.position {
-                last_vm.take_flips(&mut next_vm);
-            } else {
-                output.push(next_vm);
+                let disc = self.board.get(*line_index);
+
+                // dead end!
+                if disc == None {
+                    break;
+                }
+
+                // possible target disc to flip!
+                if disc == Some(opposition) {
+                    line_flips.push(*line_index);
+                    continue;
+                }
+
+                // we've found our own color -- if we have targets, it's a valid move!
+                if disc == Some(player) {
+                    // nothing buffered? nothing to flip. next line!
+                    if line_flips.is_empty() {
+                        break;
+                    }
+
+                    // we've buffered some line flips; add them to the over all list of flips
+                    flips.append(&mut line_flips);
+                    break;
+                }
             }
         }
 
-        output
-    }
-
-    fn update_scores(&mut self, valid_move: &ValidMove) {
-        let flipped = valid_move.flips.len();
-        let total = flipped + 1; // +1 for the played disc
-        self.empty -= 1; // decrement the empty spaces
-        if self.turn == Disc::Dark {
-            self.dark += total;
-            self.light -= flipped;
+        if flips.is_empty() {
+            None
         } else {
-            self.light += total;
-            self.dark -= flipped;
+            Some(flips)
         }
     }
 }
@@ -283,29 +251,6 @@ impl Display for Game {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ValidMove {
-    pub position: Position,
-    pub flips: Vec<Position>,
-}
-
-impl ValidMove {
-    pub fn new(position: Position, flips: Vec<Position>) -> Self {
-        Self { position, flips }
-    }
-
-    pub fn take_flips(&mut self, other: &mut Self) {
-        // consume the other flips, and make the set unique
-        self.flips.append(&mut other.flips);
-        self.flips.sort();
-        self.flips.dedup();
-    }
-
-    pub fn score(&self) -> usize {
-        self.flips.len()
-    }
-}
-
 #[cfg(test)]
 mod tests {
 
@@ -317,7 +262,8 @@ mod tests {
         let game = Game::new();
         let valid_moves = game.valid_moves(game.turn);
 
-        let mut move_positions: Vec<Position> = valid_moves.iter().map(|vm| vm.position).collect();
+        let mut move_positions: Vec<Position> =
+            valid_moves.into_iter().map(Position::new).collect();
         move_positions.sort(); // ensure they're in a predictable order
 
         let mut target_move_positions = vec![
@@ -335,14 +281,11 @@ mod tests {
     fn test_validate_move() {
         let game = Game::new();
 
-        let bad_position = Position::new(0);
-        assert!(game.validate_move(game.turn, bad_position).is_none());
+        assert!(game.validate_move(game.turn, 0).is_none());
 
-        let good_position = Position::new(19);
-        let good_move = game.validate_move(game.turn, good_position);
-        let target_move = ValidMove::new(Position::new(19), vec![Position::new(27)]);
+        let good_index = game.validate_move(game.turn, 19);
 
-        assert_eq!(good_move, Some(target_move));
+        assert_eq!(good_index.unwrap(), 19);
     }
 
     #[test]
@@ -353,26 +296,26 @@ mod tests {
         // - (println) game state
 
         let mut game = Game::new();
-        println!("{}", game);
 
-        let mut valid_moves = game.valid_moves(game.turn);
-        let vm1 = valid_moves.pop().unwrap();
-        game.play_valid_move(vm1.clone());
+        let mut valid_indexes = game.valid_moves(game.turn);
+        let vm1 = valid_indexes.pop().unwrap();
+        game.play(vm1);
 
         assert_eq!(game.turn, Disc::Light);
-        assert_eq!(game.transcript, vec![Play::Move(vm1.position)]);
-        println!("{}", game);
+        assert_eq!(game.transcript, vec![Play::Move(Position::new(vm1))]);
 
-        valid_moves = game.valid_moves(game.turn);
-        let vm2 = valid_moves.pop().unwrap();
-        game.play_valid_move(vm2.clone());
+        valid_indexes = game.valid_moves(game.turn);
+        let vm2 = valid_indexes.pop().unwrap();
+        game.play(vm2);
 
         assert_eq!(game.turn, Disc::Dark);
         assert_eq!(
             game.transcript,
-            vec![Play::Move(vm1.position), Play::Move(vm2.position)]
+            vec![
+                Play::Move(Position::new(vm1)),
+                Play::Move(Position::new(vm2))
+            ]
         );
-        println!("{}", game);
     }
 
     #[test]
@@ -380,12 +323,12 @@ mod tests {
         // test a couple of moves in with an incomplete game
         let mut game = Game::new();
 
-        game.play_valid_move(
-            game.validate_move(game.turn, Position::from_xy(3, 2))
+        game.play(
+            game.validate_move(game.turn, Position::from_xy(3, 2).into())
                 .unwrap(),
         );
-        game.play_valid_move(
-            game.validate_move(game.turn, Position::from_xy(2, 2))
+        game.play(
+            game.validate_move(game.turn, Position::from_xy(2, 2).into())
                 .unwrap(),
         );
 
@@ -402,8 +345,8 @@ mod tests {
         while !game.is_complete {
             match game.valid_moves(game.turn).pop() {
                 None => game.pass(),
-                Some(vm) => game.play_valid_move(vm),
-            }
+                Some(vm) => game.play(vm),
+            };
         }
 
         let game_from_transcript = Game::from_transcript(&game.transcript).unwrap();
@@ -413,23 +356,21 @@ mod tests {
 
     #[test]
     fn test_scoring() {
-        for _ in 0..100 {
-            let mut game = Game::new();
+        let mut game = Game::new();
 
-            while !game.is_complete {
-                match game.valid_moves(game.turn).pop() {
-                    None => game.pass(),
-                    Some(vm) => game.play_valid_move(vm),
-                }
-            }
-
-            let dark = game.board.indexes_of(Some(Disc::Dark)).count();
-            let light = game.board.indexes_of(Some(Disc::Light)).count();
-            let empty = game.board.indexes_of(None).count();
-
-            assert_eq!(game.dark, dark);
-            assert_eq!(game.light, light);
-            assert_eq!(game.empty, empty);
+        while !game.is_complete {
+            match game.valid_moves(game.turn).pop() {
+                None => game.pass(),
+                Some(vm) => game.play(vm),
+            };
         }
+
+        let dark = game.board.indexes_of(Some(Disc::Dark)).count();
+        let light = game.board.indexes_of(Some(Disc::Light)).count();
+        let empty = game.board.indexes_of(None).count();
+
+        assert_eq!(game.dark, dark);
+        assert_eq!(game.light, light);
+        assert_eq!(game.empty, empty);
     }
 }

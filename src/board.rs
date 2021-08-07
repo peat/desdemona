@@ -1,5 +1,6 @@
 use std::fmt::*;
 
+use crate::data;
 use crate::{Disc, Position};
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -43,6 +44,10 @@ impl Board {
             .enumerate()
             .filter(move |(_, p)| **p == disc)
             .map(|(idx, _)| idx)
+    }
+
+    pub fn lines_for(&self, index: usize) -> &'static [&'static [usize]] {
+        data::POSITION_INDEX_LINES[index]
     }
 }
 

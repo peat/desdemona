@@ -32,10 +32,11 @@ Desdemona provides both a game you can play, as well as a simulation framework f
 * `desstress` runs stress tests and benchmarking (note: please use cargo's `--release` flag)
 * `desdata` regenerates data for the static data file if needed (`src/data.rs`).
 
-## Available Strategies 
+## Available Strategies
 
 Desdemona has a simple framework for building your own game play strategies, and includes five different (and very basic) strategies in the `src/strategies` directory:
 
+* `Constrain` which tries to limit the opponent's moves.
 * `Maximize` which plays the move that flips the maximum number of discs.
 * `Minimize` is the opposite, playing the move that flips the least number of discs.
 * `Simple` plays the first move it discovers.
@@ -54,7 +55,7 @@ None of these strategies are particularly effective when playing against skilled
 
 ## Benchmarks
 
-Currently plays a full random game in ~400µs, and can be parallelized to ~65µs (see `bin/desstress` above). This isn't important for casual play, but it's handy for analysis!
+Currently plays a full random game in ~85µs, and can be parallelized to ~25µs (see `bin/desstress` above). This isn't important for casual play, but it's handy for analysis!
 
 ## Copyright, License
 

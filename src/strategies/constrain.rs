@@ -1,5 +1,5 @@
 use crate::strategies::Strategy;
-use crate::{Game, ValidMove};
+use crate::Game;
 
 #[derive(Copy, Clone)]
 pub struct Constrain {}
@@ -13,15 +13,15 @@ impl Strategy for Constrain {
         "0.1"
     }
 
-    fn next_play(&mut self, game: &Game) -> Option<ValidMove> {
+    fn next_play(&mut self, game: &Game) -> Option<usize> {
         // look for the move that blocks the most moves for the opponent
-        let mut scored_moves: Vec<(usize, ValidMove)> = game
+        let mut scored_moves: Vec<(usize, usize)> = game
             .valid_moves(game.turn)
             .into_iter()
             .map(|vm| {
                 // clone the game and the move and play it
                 let mut possible_game = game.clone();
-                possible_game.play_valid_move(vm.clone());
+                possible_game.play(vm);
 
                 // count how many moves the opponent has available
                 // note: game.turn gets flipped by play()

@@ -100,9 +100,9 @@ fn run_game(dark_strategy_name: &str, light_strategy_name: &str) -> Game {
         };
 
         match strategy.next_play(&game) {
-            Some(valid_move) => game.play_valid_move(valid_move),
+            Some(valid_move) => game.play(valid_move),
             None => game.pass(),
-        }
+        };
     }
 
     game

@@ -1,5 +1,5 @@
 use crate::strategies::{Random, Strategy};
-use crate::{Disc, Game, ValidMove};
+use crate::{Disc, Game};
 
 use rayon::prelude::*;
 
@@ -15,8 +15,8 @@ impl Strategy for Monte {
         "0.1"
     }
 
-    fn next_play(&mut self, game: &Game) -> Option<ValidMove> {
-        let results: Vec<(usize, ValidMove)> = game
+    fn next_play(&mut self, game: &Game) -> Option<usize> {
+        let results: Vec<(usize, usize)> = game
             .valid_moves(game.turn)
             .into_par_iter()
             .map(|vm| (self.wins_for(game, &vm), vm))
@@ -31,14 +31,14 @@ impl Strategy for Monte {
 impl Monte {
     const ROUNDS: usize = 100;
 
-    fn wins_for(&self, game: &Game, valid_move: &ValidMove) -> usize {
+    fn wins_for(&self, game: &Game, valid_move: &usize) -> usize {
         let mut random = Random {};
         let mut wins = 0;
         for _ in 0..Self::ROUNDS {
             // make a copy of the game
             let mut new_game = game.clone();
             // update it with the given move
-            new_game.play_valid_move(valid_move.clone());
+            new_game.play(*valid_move);
             // solve the remainder of plays with the random strategy
             random.solve(&mut new_game);
 

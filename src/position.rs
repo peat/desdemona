@@ -1,4 +1,3 @@
-use crate::data;
 use std::fmt::*;
 
 const MAX_XY: usize = 7;
@@ -32,10 +31,6 @@ impl Position {
         let y = self.0 / 8;
 
         (x, y)
-    }
-
-    pub fn lines_for(&self) -> &'static [&'static [usize]] {
-        data::POSITION_INDEX_LINES[self.0]
     }
 
     pub fn generate_north(&self) -> Vec<Position> {

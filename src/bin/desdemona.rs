@@ -64,10 +64,10 @@ fn main() {
                         game.pass();
                         break;
                     }
-                    Input::Move(position) => match game.validate_move(game.turn, position) {
+                    Input::Move(position) => match game.validate_move(game.turn, position.into()) {
                         Some(valid_move) => {
                             // it's a good move, do it
-                            game.play_valid_move(valid_move);
+                            game.play(valid_move);
                             break;
                         }
                         None => {
@@ -83,9 +83,9 @@ fn main() {
             std::io::stdout().flush().unwrap();
             // opponent (light) plays a random valid move.
             match strategy.next_play(&game) {
-                Some(vm) => game.play_valid_move(vm),
+                Some(vm) => game.play(vm),
                 None => game.pass(),
-            }
+            };
             println!();
         }
     }

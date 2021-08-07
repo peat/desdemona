@@ -7,5 +7,5 @@ pub mod strategies;
 
 pub use board::Board;
 pub use disc::Disc;
-pub use game::{Game, Play, ValidMove};
+pub use game::{Game, Play};
 pub use position::Position;

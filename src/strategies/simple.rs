@@ -1,5 +1,5 @@
 use crate::strategies::Strategy;
-use crate::{Game, ValidMove};
+use crate::Game;
 
 #[derive(Copy, Clone)]
 pub struct Simple {}
@@ -13,7 +13,7 @@ impl Strategy for Simple {
         "0.1"
     }
 
-    fn next_play(&mut self, game: &Game) -> Option<ValidMove> {
+    fn next_play(&mut self, game: &Game) -> Option<usize> {
         game.valid_moves(game.turn).pop()
     }
 }
