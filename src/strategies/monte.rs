@@ -3,7 +3,7 @@ use crate::{Disc, Game, ValidMove};
 
 use rayon::prelude::*;
 
-#[derive(Default)]
+#[derive(Default, Copy, Clone)]
 pub struct Monte {}
 
 impl Strategy for Monte {
@@ -32,7 +32,7 @@ impl Monte {
     const ROUNDS: usize = 100;
 
     fn wins_for(&self, game: &Game, valid_move: &ValidMove) -> usize {
-        let mut random = Random::new();
+        let mut random = Random {};
         let mut wins = 0;
         for _ in 0..Self::ROUNDS {
             // make a copy of the game

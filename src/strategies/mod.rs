@@ -32,7 +32,7 @@ impl Strategies {
             "maximize" => Some(Box::new(Maximize {})),
             "minimize" => Some(Box::new(Minimize {})),
             "monte" => Some(Box::new(Monte {})),
-            "random" => Some(Box::new(Random::new())),
+            "random" => Some(Box::new(Random {})),
             "simple" => Some(Box::new(Simple {})),
             _ => None,
         }
@@ -45,14 +45,14 @@ impl Strategies {
         output.insert(Strategies::Maximize, Box::new(Maximize {}));
         output.insert(Strategies::Minimize, Box::new(Minimize {}));
         output.insert(Strategies::Monte, Box::new(Monte {}));
-        output.insert(Strategies::Random, Box::new(Random::new()));
+        output.insert(Strategies::Random, Box::new(Random {}));
         output.insert(Strategies::Simple, Box::new(Simple {}));
 
         output
     }
 }
 
-pub trait Strategy {
+pub trait Strategy: Sync {
     fn name(&self) -> &str;
     fn version(&self) -> &str;
 

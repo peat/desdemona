@@ -3,16 +3,8 @@ use crate::{Game, ValidMove};
 
 use rand::prelude::*;
 
-#[derive(Default)]
-pub struct Random {
-    rng: rand::rngs::ThreadRng,
-}
-
-impl Random {
-    pub fn new() -> Self {
-        Self { rng: thread_rng() }
-    }
-}
+#[derive(Default, Copy, Clone)]
+pub struct Random {}
 
 impl Strategy for Random {
     fn name(&self) -> &str {
@@ -24,8 +16,7 @@ impl Strategy for Random {
     }
 
     fn next_play(&mut self, game: &Game) -> Option<ValidMove> {
-        game.valid_moves(game.turn)
-            .into_iter()
-            .choose(&mut self.rng)
+        let mut rng = thread_rng();
+        game.valid_moves(game.turn).into_iter().choose(&mut rng)
     }
 }

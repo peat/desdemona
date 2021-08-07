@@ -1,6 +1,7 @@
 use crate::strategies::Strategy;
 use crate::{Game, ValidMove};
 
+#[derive(Clone, Copy)]
 pub struct Maximize {}
 
 impl Maximize {

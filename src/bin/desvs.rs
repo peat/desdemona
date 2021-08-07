@@ -1,6 +1,7 @@
 use clap::{App, ArgMatches};
 use desdemona::strategies::*;
 use desdemona::{Disc, Game};
+use rayon::prelude::*;
 use std::io;
 
 const DEFAULT_GAMES: usize = 1000;
@@ -29,21 +30,12 @@ pub fn main() -> Result<(), io::Error> {
         game_count,
     );
 
-    for _ in 0..game_count {
-        let mut game = Game::new();
+    let games_iter = OpponentIterator::new(dark_strategy.name(), light_strategy.name(), game_count);
 
-        while !game.is_complete {
-            let strategy = match game.turn {
-                Disc::Dark => &mut dark_strategy,
-                Disc::Light => &mut light_strategy,
-            };
+    let games: Vec<_> = games_iter.into_iter().collect();
 
-            match strategy.next_play(&game) {
-                Some(valid_move) => game.play_valid_move(valid_move),
-                None => game.pass(),
-            }
-        }
-
+    games.into_par_iter().for_each(|(dark, light)| {
+        let game = run_game(&dark, &light);
         if verbose {
             println!(
                 "{},{},{},{},{}",
@@ -58,30 +50,7 @@ pub fn main() -> Result<(), io::Error> {
                     .join("")
             );
         }
-
-        // tally up the points
-        dark_points += game.dark;
-        light_points += game.light;
-
-        // ignore draws; award the winners
-        if game.dark > game.light {
-            dark_wins += 1;
-        }
-
-        if game.light > game.dark {
-            light_wins += 1;
-        }
-    }
-
-    println!(
-        "Dark ({}): {} ({}) Light ({}): {} ({})",
-        dark_strategy.name(),
-        dark_wins,
-        dark_points,
-        light_strategy.name(),
-        light_wins,
-        light_points
-    );
+    });
 
     Ok(())
 }
@@ -124,4 +93,59 @@ fn parse_strategy(config: &ArgMatches, name: &str) -> Result<Box<dyn Strategy>, 
     };
 
     Ok(strategy)
+}
+
+fn run_game(dark_strategy_name: &str, light_strategy_name: &str) -> Game {
+    let mut game = Game::new();
+
+    let mut dark_strategy = Strategies::from_str(dark_strategy_name).unwrap();
+    let mut light_strategy = Strategies::from_str(light_strategy_name).unwrap();
+
+    while !game.is_complete {
+        let strategy = match game.turn {
+            Disc::Dark => &mut dark_strategy,
+            Disc::Light => &mut light_strategy,
+        };
+
+        match strategy.next_play(&game) {
+            Some(valid_move) => game.play_valid_move(valid_move),
+            None => game.pass(),
+        }
+    }
+
+    game
+}
+
+struct OpponentIterator {
+    dark_strategy_name: String,
+    light_strategy_name: String,
+    games: usize,
+    current: usize,
+}
+
+impl OpponentIterator {
+    pub fn new(dark_strategy: &str, light_strategy: &str, games: usize) -> Self {
+        Self {
+            dark_strategy_name: dark_strategy.to_ascii_lowercase(),
+            light_strategy_name: light_strategy.to_ascii_lowercase(),
+            games,
+            current: 0,
+        }
+    }
+}
+
+impl Iterator for OpponentIterator {
+    type Item = (String, String);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.current < self.games {
+            self.current += 1;
+            Some((
+                self.dark_strategy_name.clone(),
+                self.light_strategy_name.clone(),
+            ))
+        } else {
+            None
+        }
+    }
 }

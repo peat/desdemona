@@ -77,7 +77,7 @@ fn random_bench() -> Result<(), io::Error> {
     );
     io::stdout().flush()?;
     let started = Instant::now();
-    Random::new().bench(REPLAY_LOOPS);
+    Random {}.bench(REPLAY_LOOPS);
     let elapsed = started.elapsed();
     println!("{:?} per game. ✅", elapsed / (REPLAY_LOOPS as u32));
     Ok(())
@@ -97,7 +97,7 @@ fn parallel_bench() -> Result<(), io::Error> {
         .into_iter()
         .collect::<Vec<usize>>()
         .par_iter()
-        .map(|_| Random::new().bench(replay_loops))
+        .map(|_| Random {}.bench(replay_loops))
         .count();
     let elapsed = started.elapsed();
 

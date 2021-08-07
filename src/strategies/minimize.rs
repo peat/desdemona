@@ -1,6 +1,7 @@
 use crate::strategies::Strategy;
 use crate::{Game, ValidMove};
 
+#[derive(Copy, Clone)]
 pub struct Minimize {}
 
 impl Minimize {

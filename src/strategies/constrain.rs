@@ -1,6 +1,7 @@
 use crate::strategies::Strategy;
 use crate::{Game, ValidMove};
 
+#[derive(Copy, Clone)]
 pub struct Constrain {}
 
 impl Strategy for Constrain {
