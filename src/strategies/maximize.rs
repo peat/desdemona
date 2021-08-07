@@ -13,7 +13,7 @@ impl Maximize {
 
 impl Strategy for Maximize {
     fn name(&self) -> &str {
-        "Maximize"
+        "maximize"
     }
 
     fn version(&self) -> &str {

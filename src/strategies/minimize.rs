@@ -13,7 +13,7 @@ impl Minimize {
 
 impl Strategy for Minimize {
     fn name(&self) -> &str {
-        "Minimize"
+        "minimize"
     }
 
     fn version(&self) -> &str {

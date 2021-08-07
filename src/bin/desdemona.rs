@@ -20,7 +20,7 @@ fn main() {
 
     let mut strategy: Box<dyn Strategy> = match config.value_of("strategy") {
         None => Box::new(Minimize {}),
-        Some(strategy) => match Strategies::from_str(strategy) {
+        Some(strategy) => match Strategies::from_name(strategy) {
             Some(s) => s,
             None => {
                 println!(

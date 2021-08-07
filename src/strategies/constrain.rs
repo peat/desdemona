@@ -6,7 +6,7 @@ pub struct Constrain {}
 
 impl Strategy for Constrain {
     fn name(&self) -> &str {
-        "Constrain"
+        "constrain"
     }
 
     fn version(&self) -> &str {

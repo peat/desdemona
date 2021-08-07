@@ -26,7 +26,7 @@ pub enum Strategies {
 }
 
 impl Strategies {
-    pub fn from_str(name: &str) -> Option<Box<dyn Strategy>> {
+    pub fn from_name(name: &str) -> Option<Box<dyn Strategy>> {
         match name {
             "constrain" => Some(Box::new(Constrain {})),
             "maximize" => Some(Box::new(Maximize {})),

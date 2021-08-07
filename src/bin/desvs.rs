@@ -9,19 +9,12 @@ const DEFAULT_GAMES: usize = 1000;
 pub fn main() -> Result<(), io::Error> {
     let config = get_args();
 
-    let mut dark_wins: usize = 0;
-    let mut dark_points: usize = 0;
-    let mut light_wins: usize = 0;
-    let mut light_points: usize = 0;
-
-    let mut dark_strategy: Box<dyn Strategy> = dark_strategy(&config)?;
-    let mut light_strategy: Box<dyn Strategy> = light_strategy(&config)?;
+    let dark_strategy: Box<dyn Strategy> = dark_strategy(&config)?;
+    let light_strategy: Box<dyn Strategy> = light_strategy(&config)?;
     let game_count: usize = match config.value_of("games") {
         Some(input) => input.parse().unwrap_or(DEFAULT_GAMES),
         None => DEFAULT_GAMES,
     };
-
-    let verbose = config.occurrences_of("v") > 0;
 
     println!(
         "desvs: playing dark ({}) vs light ({}) for {} games",
@@ -36,20 +29,20 @@ pub fn main() -> Result<(), io::Error> {
 
     games.into_par_iter().for_each(|(dark, light)| {
         let game = run_game(&dark, &light);
-        if verbose {
-            println!(
-                "{},{},{},{},{}",
-                dark_strategy.name(),
-                light_strategy.name(),
-                game.dark,
-                game.light,
-                game.transcript
-                    .iter()
-                    .map(|p| format!("{}", p))
-                    .collect::<Vec<String>>()
-                    .join("")
-            );
-        }
+
+        // print out a CSV of stats
+        println!(
+            "{},{},{},{},{}",
+            dark_strategy.name(),
+            light_strategy.name(),
+            game.dark,
+            game.light,
+            game.transcript
+                .iter()
+                .map(|p| format!("{}", p))
+                .collect::<Vec<String>>()
+                .join("")
+        );
     });
 
     Ok(())
@@ -61,8 +54,7 @@ fn get_args() -> ArgMatches<'static> {
         .author("Peat Bakke <peat@peat.org>")
         .about("Plays two strategies against each other")
         .args_from_usage(
-            "-v                         'Verbose mode'
-            -g, --games=[COUNT]        'How many games to play (default 1,000)'
+            "-g, --games=[COUNT]        'How many games to play (default 1,000)'
             -l, --light=<STRATEGY>       'Determine the light player's strategy: minimize, maximize, random, simple, monte'
             -d, --dark=<STRATEGY>       'Determine the dark player's strategy: minimize, maximize, random, simple, monte'"
         )
@@ -80,7 +72,7 @@ fn dark_strategy(config: &ArgMatches) -> Result<Box<dyn Strategy>, io::Error> {
 fn parse_strategy(config: &ArgMatches, name: &str) -> Result<Box<dyn Strategy>, io::Error> {
     let strategy: Box<dyn Strategy> = match config.value_of(name) {
         None => Box::new(Minimize {}),
-        Some(strategy) => match Strategies::from_str(strategy) {
+        Some(strategy) => match Strategies::from_name(strategy) {
             Some(s) => s,
             None => {
                 let error = format!(
@@ -98,8 +90,8 @@ fn parse_strategy(config: &ArgMatches, name: &str) -> Result<Box<dyn Strategy>, 
 fn run_game(dark_strategy_name: &str, light_strategy_name: &str) -> Game {
     let mut game = Game::new();
 
-    let mut dark_strategy = Strategies::from_str(dark_strategy_name).unwrap();
-    let mut light_strategy = Strategies::from_str(light_strategy_name).unwrap();
+    let mut dark_strategy = Strategies::from_name(dark_strategy_name).unwrap();
+    let mut light_strategy = Strategies::from_name(light_strategy_name).unwrap();
 
     while !game.is_complete {
         let strategy = match game.turn {

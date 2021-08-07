@@ -8,7 +8,7 @@ pub struct Random {}
 
 impl Strategy for Random {
     fn name(&self) -> &str {
-        "Random"
+        "random"
     }
 
     fn version(&self) -> &str {

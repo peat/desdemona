@@ -6,7 +6,7 @@ pub struct Simple {}
 
 impl Strategy for Simple {
     fn name(&self) -> &str {
-        "Simple"
+        "simple"
     }
 
     fn version(&self) -> &str {

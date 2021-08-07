@@ -8,7 +8,7 @@ pub struct Monte {}
 
 impl Strategy for Monte {
     fn name(&self) -> &str {
-        "Monte"
+        "monte"
     }
 
     fn version(&self) -> &str {
