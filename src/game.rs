@@ -70,27 +70,16 @@ impl Game {
     }
 
     /// Finds all of the valid moves for the current player.
-    #[allow(clippy::manual_flatten)]
-    pub fn valid_moves(&self, player: Disc) -> Vec<usize> {
-        // Note: this could be implemented with map/flatten/collect,
-        // however it's considerably slower than allocating up front.
-        let mut raw_moves: Vec<usize> = Vec::with_capacity(64);
-        for p in self.board.positions_of(None) {
-            if self.can_move(player, p.into()) {
-                raw_moves.push(p.into())
-            }
-        }
-
-        raw_moves.sort_unstable();
-        raw_moves.dedup();
-
-        raw_moves
+    pub fn valid_moves(&self, player: Disc) -> impl Iterator<Item = usize> + '_ {
+        self.board
+            .indexes_of(None)
+            .filter(move |index| self.can_move(player, *index))
     }
 
     // a result of None indicates it's not a valid move
     pub fn play(&mut self, position: usize) {
         // find the flips for playing that position
-        let mut flips = self.flips_for(position).unwrap();
+        let mut flips = self.flips_for(position);
 
         // save this for scoring updates
         let changed = flips.len();
@@ -99,8 +88,8 @@ impl Game {
         flips.push(position);
 
         // iterate through the flips and set those discs to the current player
-        for p in flips.iter() {
-            self.board.set(*p, self.turn);
+        for p in flips.into_iter() {
+            self.board.set(p, self.turn);
         }
 
         // save the played position to the transcript
@@ -139,7 +128,7 @@ impl Game {
     fn validate_completion(&mut self) {
         // if there are no more valid moves for either player, then the game is complete.
         self.is_complete =
-            self.valid_moves(Disc::Dark).is_empty() && self.valid_moves(Disc::Light).is_empty()
+            self.valid_moves(Disc::Dark).count() == 0 && self.valid_moves(Disc::Light).count() == 0
     }
 
     pub fn can_move(&self, player: Disc, index: usize) -> bool {
@@ -188,7 +177,7 @@ impl Game {
         None
     }
 
-    pub fn flips_for(&self, index: usize) -> Option<Vec<usize>> {
+    pub fn flips_for(&self, index: usize) -> Vec<usize> {
         let player = self.turn;
         let opposition = self.turn.opposite();
 
@@ -233,11 +222,7 @@ impl Game {
             }
         }
 
-        if flips.is_empty() {
-            None
-        } else {
-            Some(flips)
-        }
+        flips
     }
 }
 
@@ -297,23 +282,24 @@ mod tests {
 
         let mut game = Game::new();
 
-        let mut valid_indexes = game.valid_moves(game.turn);
-        let vm1 = valid_indexes.pop().unwrap();
-        game.play(vm1);
+        let valid_move1 = game.valid_moves(game.turn).next().unwrap();
+        game.play(valid_move1);
 
         assert_eq!(game.turn, Disc::Light);
-        assert_eq!(game.transcript, vec![Play::Move(Position::new(vm1))]);
+        assert_eq!(
+            game.transcript,
+            vec![Play::Move(Position::new(valid_move1))]
+        );
 
-        valid_indexes = game.valid_moves(game.turn);
-        let vm2 = valid_indexes.pop().unwrap();
-        game.play(vm2);
+        let valid_move2 = game.valid_moves(game.turn).next().unwrap();
+        game.play(valid_move2);
 
         assert_eq!(game.turn, Disc::Dark);
         assert_eq!(
             game.transcript,
             vec![
-                Play::Move(Position::new(vm1)),
-                Play::Move(Position::new(vm2))
+                Play::Move(Position::new(valid_move1)),
+                Play::Move(Position::new(valid_move2))
             ]
         );
     }
@@ -343,7 +329,8 @@ mod tests {
         let mut game = Game::new();
 
         while !game.is_complete {
-            match game.valid_moves(game.turn).pop() {
+            let vm = game.valid_moves(game.turn).next();
+            match vm {
                 None => game.pass(),
                 Some(vm) => game.play(vm),
             };
@@ -359,7 +346,8 @@ mod tests {
         let mut game = Game::new();
 
         while !game.is_complete {
-            match game.valid_moves(game.turn).pop() {
+            let vm = game.valid_moves(game.turn).next();
+            match vm {
                 None => game.pass(),
                 Some(vm) => game.play(vm),
             };

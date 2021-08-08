@@ -18,6 +18,7 @@ impl Strategy for Monte {
     fn next_play(&mut self, game: &Game) -> Option<usize> {
         let results: Vec<(usize, usize)> = game
             .valid_moves(game.turn)
+            .collect::<Vec<usize>>()
             .into_par_iter()
             .map(|vm| (self.wins_for(game, &vm), vm))
             .collect();

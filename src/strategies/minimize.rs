@@ -14,11 +14,11 @@ impl Strategy for Minimize {
     }
 
     fn next_play(&mut self, game: &Game) -> Option<usize> {
-        let mut moves = game.valid_moves(game.turn);
+        let mut moves: Vec<_> = game.valid_moves(game.turn).collect();
 
         moves.sort_by(|a, b| {
-            let a_flips = game.flips_for(*a).unwrap_or_default();
-            let b_flips = game.flips_for(*b).unwrap_or_default();
+            let a_flips = game.flips_for(*a);
+            let b_flips = game.flips_for(*b);
             b_flips.len().cmp(&a_flips.len())
         });
 

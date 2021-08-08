@@ -14,6 +14,6 @@ impl Strategy for Simple {
     }
 
     fn next_play(&mut self, game: &Game) -> Option<usize> {
-        game.valid_moves(game.turn).pop()
+        game.valid_moves(game.turn).next()
     }
 }

@@ -25,7 +25,7 @@ impl Strategy for Constrain {
 
                 // count how many moves the opponent has available
                 // note: game.turn gets flipped by play()
-                let move_count = possible_game.valid_moves(game.turn).len();
+                let move_count = possible_game.valid_moves(game.turn).count();
                 (move_count, vm)
             })
             .collect();

@@ -14,11 +14,11 @@ impl Strategy for Maximize {
     }
 
     fn next_play(&mut self, game: &Game) -> Option<usize> {
-        let mut moves = game.valid_moves(game.turn);
+        let mut moves: Vec<_> = game.valid_moves(game.turn).collect();
 
         moves.sort_by(|a, b| {
-            let a_flips = game.flips_for(*a).unwrap_or_default();
-            let b_flips = game.flips_for(*b).unwrap_or_default();
+            let a_flips = game.flips_for(*a);
+            let b_flips = game.flips_for(*b);
             a_flips.len().cmp(&b_flips.len())
         });
 

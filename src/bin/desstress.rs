@@ -1,5 +1,5 @@
 use desdemona::strategies::{Random, Strategy};
-use desdemona::{Disc, Game};
+use desdemona::{Disc, Game, Position};
 use rand::prelude::*;
 use rayon::prelude::*;
 use std::io::{self, Write};
@@ -28,15 +28,27 @@ fn replay_loops() -> Result<(), io::Error> {
             println!("Original game valid moves:");
             println!(
                 "Dark {:?}\nLight {:?}",
-                good_game.valid_moves(Disc::Dark),
-                good_game.valid_moves(Disc::Light)
+                good_game
+                    .valid_moves(Disc::Dark)
+                    .map(Position::new)
+                    .collect::<Vec<Position>>(),
+                good_game
+                    .valid_moves(Disc::Light)
+                    .map(Position::new)
+                    .collect::<Vec<Position>>()
             );
 
             println!("Transcript game valid moves:");
             println!(
                 "Dark {:?}\nLight {:?}",
-                bad_game.valid_moves(Disc::Dark),
-                bad_game.valid_moves(Disc::Light)
+                bad_game
+                    .valid_moves(Disc::Dark)
+                    .map(Position::new)
+                    .collect::<Vec<Position>>(),
+                bad_game
+                    .valid_moves(Disc::Light)
+                    .map(Position::new)
+                    .collect::<Vec<Position>>()
             );
 
             return Ok(());
