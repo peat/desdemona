@@ -131,7 +131,7 @@ impl Game {
             self.valid_moves(Disc::Dark).count() == 0 && self.valid_moves(Disc::Light).count() == 0
     }
 
-    pub fn can_move(&self, player: Disc, index: usize) -> bool {
+    fn can_move(&self, player: Disc, index: usize) -> bool {
         // basic check ... occupied?
         if self.board.get(index).is_some() {
             return false;
