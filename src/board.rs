@@ -34,10 +34,6 @@ impl Board {
         self.positions[index] = Some(disc)
     }
 
-    pub fn positions_of(&self, disc: Option<Disc>) -> impl Iterator<Item = Position> + '_ {
-        self.indexes_of(disc).map(Position::new)
-    }
-
     pub fn indexes_of(&self, disc: Option<Disc>) -> impl Iterator<Item = usize> + '_ {
         self.positions
             .iter()
