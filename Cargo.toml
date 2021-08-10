@@ -1,6 +1,6 @@
 [package]
 name = "desdemona"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2018"
 description = "Command line Othello and simulation framework"
 authors = ["Peat Bakke <peat@peat.org>"]
