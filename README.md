@@ -24,6 +24,8 @@ Desdemona provides both a game you can play, as well as a simulation framework f
 
 `desdemona` will start a game. For help, add the `--help` flag.
 
+The current ASCII graphics are accurate for a dark color scheme terminal, where "○" renders as a dark disc with a light outline, and "●" renders as a solid light disc. If you're using a light color scheme, just pretend they're the opposite.
+
 ## Binaries
 
 * `desdemona` (the default) starts a game of Othello.
