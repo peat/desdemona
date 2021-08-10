@@ -3,6 +3,13 @@ use std::fmt::*;
 use crate::data;
 use crate::{Disc, Position};
 
+/// Represents the Othello game board, where each position is represented by `Option<Disc>`.
+///
+/// All positions in the board are addressed by index within an array. To use coordinates,
+/// check out [Position] which offers convenience functions for translating between indexes
+/// and _(x, y)_ coordinates.
+///
+/// `Board` will panic on out of bounds indexes (> 63).
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub struct Board {
     positions: [Option<Disc>; 64],
@@ -17,6 +24,7 @@ impl Default for Board {
 }
 
 impl Board {
+    /// Creates a new [Board] populated with the starting positions.
     pub fn new() -> Self {
         let mut board = Board::default();
         board.set(Position::from_xy(3, 3).into(), Disc::Light);
@@ -26,14 +34,18 @@ impl Board {
         board
     }
 
+    /// Returns the [Disc] at a given index.
     pub fn get(&self, index: usize) -> Option<Disc> {
         self.positions[index]
     }
 
+    /// Sets a [Disc] at the given index. Use [Game::play()](crate::Game::play()) to play a move
+    /// with flipping and scoring.
     pub fn set(&mut self, index: usize, disc: Disc) {
         self.positions[index] = Some(disc)
     }
 
+    /// Returns an `Iterator` over the indexes for all positions matching `disc`
     pub fn indexes_of(&self, disc: Option<Disc>) -> impl Iterator<Item = usize> + '_ {
         self.positions
             .iter()
@@ -42,6 +54,8 @@ impl Board {
             .map(|(idx, _)| idx)
     }
 
+    /// Returns the lines of play for any given position. This data is pre-generated as
+    /// static data in `src/data.rs` by `src/bin/desdata.rs`
     pub fn lines_for(&self, index: usize) -> &'static [&'static [usize]] {
         data::POSITION_INDEX_LINES[index]
     }

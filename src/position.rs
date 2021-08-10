@@ -6,6 +6,7 @@ const MAX_INDEX: usize = 63;
 const X_POSITIONS: [char; 8] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const Y_POSITIONS: [char; 8] = ['1', '2', '3', '4', '5', '6', '7', '8'];
 
+/// Provides convenience methods for translating from coordinates to indexes.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct Position(usize);
 

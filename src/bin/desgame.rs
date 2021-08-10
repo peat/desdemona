@@ -1,5 +1,4 @@
-use desdemona::strategies::Random;
-use desdemona::strategies::Strategy;
+use desdemona::strategies::*;
 use desdemona::Game;
 
 fn main() {
