@@ -11,6 +11,10 @@ const Y_POSITIONS: [char; 8] = ['1', '2', '3', '4', '5', '6', '7', '8'];
 pub struct Position(usize);
 
 impl Position {
+    // TODO: convert (char, char) to Position, and Position to (char, char) for generating
+    // and consuming transcripts.
+
+    /// Creates a new [Position] from the given index. Panics if the index is out of bounds.
     pub fn new(index: usize) -> Self {
         if index > MAX_INDEX {
             panic!("Position out of bounds - index: {}", index);
@@ -19,6 +23,7 @@ impl Position {
         Self(index)
     }
 
+    /// Converts _(x, y)_ into a [Position]. Panics if `x` or `y` is out of bounds.
     pub fn from_xy(x: usize, y: usize) -> Self {
         if x > MAX_XY || y > MAX_XY {
             panic!("Position out of bounds - x: {}, y: {}", x, y);
@@ -27,6 +32,7 @@ impl Position {
         Self::new((y * 8) + x)
     }
 
+    /// Converts this [Position] into _(x, y)_ indexes.
     pub fn to_xy(self) -> (usize, usize) {
         let x = self.0 % 8;
         let y = self.0 / 8;
@@ -34,6 +40,7 @@ impl Position {
         (x, y)
     }
 
+    /// Generates all of the indexes north of the [Position]. Used in `desdata` to generate static data.
     pub fn generate_north(&self) -> Vec<Position> {
         let mut output = Vec::with_capacity(8);
         output.push(*self);
@@ -45,6 +52,7 @@ impl Position {
         output
     }
 
+    /// Generates all of the indexes north east of the [Position]. Used in `desdata` to generate static data.
     pub fn generate_north_east(&self) -> Vec<Position> {
         let mut output = Vec::with_capacity(8);
         output.push(*self);
@@ -56,6 +64,7 @@ impl Position {
         output
     }
 
+    /// Generates all of the indexes east of the [Position]. Used in `desdata` to generate static data.
     pub fn generate_east(&self) -> Vec<Position> {
         let mut output = Vec::with_capacity(8);
         output.push(*self);
@@ -67,6 +76,7 @@ impl Position {
         output
     }
 
+    /// Generates all of the indexes south east of the [Position]. Used in `desdata` to generate static data.
     pub fn generate_south_east(&self) -> Vec<Position> {
         let mut output = Vec::with_capacity(8);
         output.push(*self);
@@ -78,6 +88,7 @@ impl Position {
         output
     }
 
+    /// Generates all of the indexes south of the [Position]. Used in `desdata` to generate static data.
     pub fn generate_south(&self) -> Vec<Position> {
         let mut output = Vec::with_capacity(8);
         output.push(*self);
@@ -89,6 +100,7 @@ impl Position {
         output
     }
 
+    /// Generates all of the indexes south west of the [Position]. Used in `desdata` to generate static data.
     pub fn generate_south_west(&self) -> Vec<Position> {
         let mut output = Vec::with_capacity(8);
         output.push(*self);
@@ -100,6 +112,7 @@ impl Position {
         output
     }
 
+    /// Generates all of the indexes west of the [Position]. Used in `desdata` to generate static data.
     pub fn generate_west(&self) -> Vec<Position> {
         let mut output = Vec::with_capacity(8);
         output.push(*self);
@@ -111,6 +124,7 @@ impl Position {
         output
     }
 
+    /// Generates all of the indexes north west of the [Position]. Used in `desdata` to generate static data.
     pub fn generate_north_west(&self) -> Vec<Position> {
         let mut output = Vec::with_capacity(8);
         output.push(*self);
