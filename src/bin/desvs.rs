@@ -55,8 +55,8 @@ fn get_args() -> ArgMatches<'static> {
         .about("Plays two strategies against each other")
         .args_from_usage(
             "-g, --games=[COUNT]        'How many games to play (default 1,000)'
-            -l, --light=<STRATEGY>       'Determine the light player's strategy: minimize, maximize, random, simple, monte'
-            -d, --dark=<STRATEGY>       'Determine the dark player's strategy: minimize, maximize, random, simple, monte'"
+            -l, --light=<STRATEGY>       'Determine the light player's strategy: constrain, minimize, maximize, random, simple, monte'
+            -d, --dark=<STRATEGY>       'Determine the dark player's strategy: constrain, minimize, maximize, random, simple, monte'"
         )
         .get_matches()
 }
@@ -76,7 +76,7 @@ fn parse_strategy(config: &ArgMatches, name: &str) -> Result<Box<dyn Strategy>, 
             Some(s) => s,
             None => {
                 let error = format!(
-                    "Unknown strategy {} -- try random, minimize, maximize, monte, or simple.",
+                    "Unknown strategy {} -- try random, constrain, minimize, maximize, monte, or simple.",
                     strategy
                 );
                 return Err(io::Error::new(io::ErrorKind::InvalidInput, error));
