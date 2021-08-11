@@ -18,7 +18,13 @@ Desdemona provides both a game you can play, as well as a simulation framework f
 
 ## Installing
 
-`cargo install desdemona` does the trick.
+Desdemona requires a working Rust development environment to build and run. For more information, head over to [rust-lang.org](https://rust-lang.org/).
+
+Once you have that sorted out:
+
+```bash
+$ cargo install desdemona
+```
 
 ## Running
 
