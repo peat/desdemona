@@ -1,4 +1,4 @@
-use crate::strategies::Strategy;
+use crate::strategies::{ScoredPlay, Strategies, Strategy};
 use crate::Game;
 
 use rand::prelude::*;
@@ -15,8 +15,13 @@ impl Strategy for Random {
         "0.1"
     }
 
-    fn next_play(&mut self, game: &Game) -> Option<usize> {
+    fn score_plays(&mut self, game: &Game) -> Vec<ScoredPlay> {
         let mut rng = thread_rng();
-        game.valid_moves(game.turn).into_iter().choose(&mut rng)
+        game.valid_moves(game.turn)
+            .map(|idx| {
+                let score = rng.gen_range(0.0..1.0);
+                ScoredPlay::new(Strategies::Random, score, idx)
+            })
+            .collect()
     }
 }

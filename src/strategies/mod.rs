@@ -70,12 +70,54 @@ pub trait Strategy: Sync {
         }
     }
 
-    fn next_play(&mut self, game: &Game) -> Option<usize>;
+    fn next_play(&mut self, game: &Game) -> Option<usize> {
+        let max_play = self.score_plays(game).iter().max()?.index;
+        Some(max_play)
+    }
+
+    fn score_plays(&mut self, game: &Game) -> Vec<ScoredPlay>;
 
     fn bench(&mut self, count: usize) {
         for _ in 0..count {
             let mut game = Game::new();
             self.solve(&mut game);
         }
+    }
+}
+
+pub struct ScoredPlay {
+    pub strategy: Strategies,
+    pub score: f32,
+    pub index: usize,
+}
+
+impl ScoredPlay {
+    pub fn new(strategy: Strategies, score: f32, index: usize) -> Self {
+        Self {
+            strategy,
+            score,
+            index,
+        }
+    }
+}
+
+impl Eq for ScoredPlay {}
+
+impl Ord for ScoredPlay {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // yolo comparing floats
+        self.score.partial_cmp(&other.score).unwrap()
+    }
+}
+
+impl PartialOrd for ScoredPlay {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for ScoredPlay {
+    fn eq(&self, other: &Self) -> bool {
+        self.score == other.score
     }
 }

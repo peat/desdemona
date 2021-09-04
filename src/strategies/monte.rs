@@ -1,4 +1,4 @@
-use crate::strategies::{Random, Strategy};
+use crate::strategies::{Random, ScoredPlay, Strategies, Strategy};
 use crate::{Disc, Game};
 
 use rayon::prelude::*;
@@ -15,17 +15,15 @@ impl Strategy for Monte {
         "0.1"
     }
 
-    fn next_play(&mut self, game: &Game) -> Option<usize> {
-        let results: Vec<(usize, usize)> = game
-            .valid_moves(game.turn)
+    fn score_plays(&mut self, game: &Game) -> Vec<ScoredPlay> {
+        game.valid_moves(game.turn)
             .collect::<Vec<usize>>()
             .into_par_iter()
             .map(|vm| (self.wins_for(game, &vm), vm))
-            .collect();
-
-        let (_, valid_move) = results.into_iter().max_by(|a, b| a.0.cmp(&b.0))?;
-
-        Some(valid_move)
+            .map(|(wins, index)| {
+                ScoredPlay::new(Strategies::Monte, wins as f32 / Self::ROUNDS as f32, index)
+            })
+            .collect()
     }
 }
 

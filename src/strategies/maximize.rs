@@ -1,4 +1,4 @@
-use crate::strategies::Strategy;
+use crate::strategies::{ScoredPlay, Strategies, Strategy};
 use crate::Game;
 
 #[derive(Clone, Copy)]
@@ -13,15 +13,28 @@ impl Strategy for Maximize {
         "0.1"
     }
 
-    fn next_play(&mut self, game: &Game) -> Option<usize> {
-        let mut moves: Vec<_> = game.valid_moves(game.turn).collect();
+    fn score_plays(&mut self, game: &Game) -> Vec<ScoredPlay> {
+        let move_flips: Vec<(usize, usize)> = game
+            .valid_moves(game.turn)
+            .map(|index| (index, game.flips_for(index).len()))
+            .collect();
 
-        moves.sort_by(|a, b| {
-            let a_flips = game.flips_for(*a);
-            let b_flips = game.flips_for(*b);
-            a_flips.len().cmp(&b_flips.len())
-        });
+        // guard on empty, so we can do unwraps later on
+        if move_flips.is_empty() {
+            return vec![];
+        }
 
-        moves.pop()
+        let (_, max_flips) = move_flips
+            .iter()
+            .max_by(|(_, a), (_, b)| a.cmp(b))
+            .cloned()
+            .unwrap();
+
+        move_flips
+            .into_iter()
+            .map(|(index, flips)| {
+                ScoredPlay::new(Strategies::Maximize, flips as f32 / max_flips as f32, index)
+            })
+            .collect()
     }
 }

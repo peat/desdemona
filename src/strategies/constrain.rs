@@ -1,4 +1,4 @@
-use crate::strategies::Strategy;
+use crate::strategies::{ScoredPlay, Strategies, Strategy};
 use crate::Game;
 
 #[derive(Copy, Clone)]
@@ -11,6 +11,41 @@ impl Strategy for Constrain {
 
     fn version(&self) -> &str {
         "0.1"
+    }
+
+    fn score_plays(&mut self, game: &Game) -> Vec<ScoredPlay> {
+        let enabled_moves: Vec<(usize, usize)> = game
+            .valid_moves(game.turn)
+            .map(|index| {
+                // clone the game and the move and play it
+                let mut possible_game = game.clone();
+                possible_game.play(index);
+
+                // count how many moves the opponent has available
+                // note: game.turn gets flipped by play()
+                let move_count = possible_game.valid_moves(game.turn).count();
+                (index, move_count)
+            })
+            .collect();
+
+        // guard so that we can use unwrap() later
+        if enabled_moves.is_empty() {
+            return vec![];
+        }
+
+        // find the maximum number of enabled moves
+        let (_, max_moves) = enabled_moves
+            .iter()
+            .max_by(|(_, a), (_, b)| a.cmp(b))
+            .cloned()
+            .unwrap();
+
+        enabled_moves
+            .into_iter()
+            .map(|(index, moves)| {
+                ScoredPlay::new(Strategies::Maximize, moves as f32 / max_moves as f32, index)
+            })
+            .collect()
     }
 
     fn next_play(&mut self, game: &Game) -> Option<usize> {
