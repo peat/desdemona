@@ -2,7 +2,7 @@
 
 Would you like to play a game? In your terminal? How about Othello? You know, the game with the light and dark discs that isn't Go?
 
-```
+```text
   a b c d e f g h
 1 · · · · · · · ·
 2 · · · · · · · ·
@@ -23,7 +23,7 @@ Desdemona requires a working Rust development environment to build and run. For 
 Once you have that sorted out:
 
 ```bash
-$ cargo install desdemona
+cargo install desdemona
 ```
 
 ## Running
@@ -76,4 +76,4 @@ This program is free software: you can redistribute it and/or modify it under th
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
+You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
