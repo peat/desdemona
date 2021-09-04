@@ -54,7 +54,9 @@ Desdemona has a simple framework for building your own game play strategies, and
 
 To play against a particular strategy, use the `-s` flag. For example, to play against the Monte strategy:
 
-`desdemona -s monte`
+```bash
+desdemona -s monte
+```
 
 ## Notes on Strategies
 
