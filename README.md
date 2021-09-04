@@ -45,6 +45,7 @@ The current ASCII graphics are accurate for a dark color scheme terminal, where 
 Desdemona has a simple framework for building your own game play strategies, and includes five different (and very basic) strategies in the `src/strategies` directory:
 
 * `Constrain` which tries to limit the opponent's moves.
+* `Corners` prefers true corners, and avoids playing the corners' neighbors.
 * `Maximize` which plays the move that flips the maximum number of discs.
 * `Minimize` is the opposite, playing the move that flips the least number of discs.
 * `Simple` plays the first move it discovers.
