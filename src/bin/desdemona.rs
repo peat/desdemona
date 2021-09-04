@@ -81,7 +81,12 @@ fn main() {
         } else {
             print!("Desdemona...");
             std::io::stdout().flush().unwrap();
-            // opponent (light) plays a random valid move.
+
+            // insert a small delay so it's clear that the computer has played, otherwise
+            // it appears instantaneously.
+            std::thread::sleep(std::time::Duration::from_millis(1000));
+
+            // opponent (light) plays a valid move.
             match strategy.next_play(&game) {
                 Some(vm) => game.play(vm),
                 None => game.pass(),
