@@ -1,4 +1,5 @@
 mod constrain;
+mod corners;
 mod maximize;
 mod minimize;
 mod monte;
@@ -7,6 +8,7 @@ mod simple;
 
 use crate::Game;
 pub use constrain::Constrain;
+pub use corners::Corners;
 pub use maximize::Maximize;
 pub use minimize::Minimize;
 pub use monte::Monte;
@@ -18,6 +20,7 @@ use std::collections::HashMap;
 #[derive(Hash, Eq, PartialEq)]
 pub enum Strategies {
     Constrain,
+    Corners,
     Maximize,
     Minimize,
     Monte,
@@ -29,6 +32,7 @@ impl Strategies {
     pub fn from_name(name: &str) -> Option<Box<dyn Strategy>> {
         match name {
             "constrain" => Some(Box::new(Constrain {})),
+            "corners" => Some(Box::new(Corners {})),
             "maximize" => Some(Box::new(Maximize {})),
             "minimize" => Some(Box::new(Minimize {})),
             "monte" => Some(Box::new(Monte {})),
@@ -42,6 +46,7 @@ impl Strategies {
         let mut output: HashMap<Strategies, Box<dyn Strategy>> = HashMap::new();
 
         output.insert(Strategies::Constrain, Box::new(Constrain {}));
+        output.insert(Strategies::Corners, Box::new(Corners {}));
         output.insert(Strategies::Maximize, Box::new(Maximize {}));
         output.insert(Strategies::Minimize, Box::new(Minimize {}));
         output.insert(Strategies::Monte, Box::new(Monte {}));

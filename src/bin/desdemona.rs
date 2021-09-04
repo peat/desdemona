@@ -24,7 +24,7 @@ fn main() {
             Some(s) => s,
             None => {
                 println!(
-                    "Unknown strategy {} -- try random, constrain, minimize, maximize, monte, or simple.",
+                    "Unknown strategy {} -- try random, constrain, corners, minimize, maximize, monte, or simple.",
                     strategy
                 );
                 return;
@@ -144,9 +144,10 @@ fn get_args() -> ArgMatches<'static> {
     App::new("desdemona")
         .version("0.1")
         .author("Peat Bakke <peat@peat.org>")
-        .about("Would you like to play a game?")
+        .long_about(
+            "Would you like to play a game? Available opponent strategies are:\nconstrain, corners, maximize, minimize, monte, random, and simple")
         .args_from_usage(
-            "-s, --strategy=[STRATEGY]       'Determine the computer's strategy: constrain, minimize, maximize, random, simple, monte'"
+            "-s, --strategy=[STRATEGY]       'Determine the computer's strategy'"
         )
         .get_matches()
 }

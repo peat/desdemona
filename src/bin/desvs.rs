@@ -52,11 +52,13 @@ fn get_args() -> ArgMatches<'static> {
     App::new("desvs")
         .version("0.1")
         .author("Peat Bakke <peat@peat.org>")
-        .about("Plays two strategies against each other")
+        .long_about(
+            "Plays two strategies against each other. Available strategies are:\nconstrain, corners, maximize, minimize, monte, random, and simple",
+        )
         .args_from_usage(
             "-g, --games=[COUNT]        'How many games to play (default 1,000)'
-            -l, --light=<STRATEGY>       'Determine the light player's strategy: constrain, minimize, maximize, random, simple, monte'
-            -d, --dark=<STRATEGY>       'Determine the dark player's strategy: constrain, minimize, maximize, random, simple, monte'"
+            -l, --light=<STRATEGY>       'Determine the light player's strategy'
+            -d, --dark=<STRATEGY>       'Determine the dark player's strategy'",
         )
         .get_matches()
 }
